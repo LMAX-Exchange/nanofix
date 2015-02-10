@@ -1,0 +1,115 @@
+/*
+ * Copyright 2015 LMAX Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+
+
+allprojects {
+    apply plugin: 'checkstyle'
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    defaultTasks 'build'
+
+    sourceCompatibility = 1.6
+    targetCompatibility = 1.6
+
+    group = 'com.lmax'
+
+
+
+    ext {
+        fullName = 'Nanofix'
+        fullDescription = 'Nanofix - FIX Engine Testing Utility'
+        teamName = 'LMAX Development Team'
+        siteUrl = 'https://github.com/LMAX-Exchange/nanofix'
+        sourceUrl = 'https://github.com/LMAX-Exchange/nanofix.git'
+
+        javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac'
+
+    }
+
+    group = 'com.lmax.nanofix'
+    sourceCompatibility = 1.6
+
+    version = resolveVersion()
+
+    jar {
+        manifest.attributes('Built-By': System.properties['user.name'],
+                            'Bundle-Name': fullName,
+                            'Bundle-Vendor': teamName,
+                            'Bundle-Description': fullDescription,
+                            'Bundle-DocURL': siteUrl)
+    }
+
+}
+
+Version resolveVersion()
+{
+    String svnRevision = System.env['SVN_REVISION']
+    if (svnRevision)
+    {
+        return new Version(major: 0, minor: 0, revision: Integer.parseInt(svnRevision));
+    }
+    else
+    {
+        return new Version(major: 0, minor: 0, revision: 0, snapshot: true);
+    }
+}
+
+subprojects {
+    checkstyle {
+        configFile = new File(rootDir, "config/checkstyle/checkstyle.xml")
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+
+        testCompile 'junit:junit:4.11',
+                    'org.jmock:jmock-junit4:2.5.1',
+                    'org.jmock:jmock-legacy:2.5.1'
+
+
+    }
+
+
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives sourcesJar
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.1'
+}
+
+class Version
+{
+    int major, minor = 0, revision = 0
+    boolean snapshot
+    String stage
+
+    String toString()
+    {
+        "$major.$minor.$revision${stage ? '.' + stage : ''}${snapshot ? '-SNAPSHOT' : ''}"
+    }
+}
