@@ -1,4 +1,4 @@
-LMAX Nanofix
+Nanofix    [![Build Status](https://travis-ci.org/LMAX-Exchange/nanofix.svg)](https://travis-ci.org/LMAX-Exchange/nanofix)
 ==============
 
 A fix client for testing FIX servers.
