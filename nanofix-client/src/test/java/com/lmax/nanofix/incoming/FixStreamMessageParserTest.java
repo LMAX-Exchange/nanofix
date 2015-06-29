@@ -16,22 +16,173 @@
 
 package com.lmax.nanofix.incoming;
 
-import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.lmax.nanofix.MessageParserCallback;
-
 import org.junit.Test;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public final class FixStreamMessageParserTest
 {
     private static final int MAX_MESSAGE_SIZE = 4096;
+
+    @Test
+    public void shouldParseFragmentedMessageAtFixMessageStartCodecBoundary()
+    {
+        final byte[] part1 = FixMessageUtil.convertFixControlCharacters(
+            "8=FIX.4.2|9=279|35=X|49=LMXBL|56=user|34=56|52=19700101-00:00:00.000|262=123456|268=3|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.0001|271=63.7|290=1|279=1|269=0|55=XYZ|" +
+                "48=349857|22=8|207=LMAX|270=0.00009|271=64.6|290=2|279=1|269=1|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=23.2|290=1|10=244|" +
+                "8=FI");
+
+        ByteBuffer inputStream1 = ByteBuffer.wrap(part1);
+
+        final byte[] part2 = FixMessageUtil.convertFixControlCharacters(
+            "X.4.2|9=140|35=X|49=LMXBL|56=user|34=57|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=67.3|290=2|10=034|" +
+                "8=FIX.4.2|9=140|35=X|49=LMXBL|56=user|34=59|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=73.7|290=2|10=037|");
+
+        ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
+
+        final List<byte[]> messages = new ArrayList<byte[]>();
+
+        MessageParserCallback callback = new MessageParserCallback()
+        {
+            @Override
+            public void onMessage(final byte[] buffer, final int offset, final int length)
+            {
+                messages.add(Arrays.copyOf(buffer, length));
+            }
+
+            @Override
+            public void onTruncatedMessage()
+            {
+            }
+
+            @Override
+            public void onParseError(final String error)
+            {
+            }
+        };
+        ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
+        parser.initialise(callback);
+
+        parser.parse(inputStream1);
+        parser.parse(inputStream2);
+
+        assertThat(messages.size(), is(3));
+    }
+
+    @Test
+    public void shouldParseFragmentedMessageWhichHasIncompleteMessagePrefixAtEnd()
+    {
+        final byte[] part1 = FixMessageUtil.convertFixControlCharacters(
+            "8=FIX.4.2|9=279|35=X|49=LMXBL|56=user|34=56|52=19700101-00:00:00.000|262=123456|268=3|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.0001|271=63.7|290=1|279=1|269=0|55=XYZ|" +
+                "48=349857|22=8|207=LMAX|270=0.00009|271=64.6|290=2|279=1|269=1|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=23.2|290=1|10=244|" +
+                "8=FI");
+
+        final byte[] part2 = FixMessageUtil.convertFixControlCharacters(
+            "X.4.2|9=140|35=X|49=LMXBL|56=user|34=57|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=67.3|290=2|10=034|8");
+
+        final byte[] part3 = FixMessageUtil.convertFixControlCharacters(
+            "=FIX.4.2|9=140|35=X|49=LMXBL|56=user|34=59|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=73.7|290=2|10=037|");
+
+        final ByteBuffer inputStream1 = ByteBuffer.wrap(part1);
+        final ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
+        final ByteBuffer inputStream3 = ByteBuffer.wrap(part3);
+
+        final List<byte[]> messages = new ArrayList<byte[]>();
+
+        final MessageParserCallback callback = createMessageParserCallback(
+            new MyMessageParserCallbackTestFactory(messages));
+        final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
+        parser.initialise(callback);
+
+        parser.parse(inputStream1);
+        parser.parse(inputStream2);
+        parser.parse(inputStream3);
+
+        assertThat(messages.size(), is(3));
+    }
+
+    @Test
+    public void shouldParseFragmentedMessageWhichHasIncompleteEnd()
+    {
+        final byte[] part1 = FixMessageUtil.convertFixControlCharacters(
+            "8=FIX.4.2|9=279|35=X|49=LMXBL|56=user|34=56|52=19700101-00:00:00.000|262=123456|268=3|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.0001|271=63.7|290=1|279=1|269=0|55=XYZ|" +
+                "48=349857|22=8|207=LMAX|270=0.00009|271=64.6|290=2|279=1|269=1|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=23.2|290=1|10=244|" +
+                "8=FI");
+
+        final byte[] part2 = FixMessageUtil.convertFixControlCharacters(
+            "X.4.2|9=140|35=X|49=LMXBL|56=user|34=57|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=67.3|290=2|10=");
+
+        final byte[] part3 = FixMessageUtil.convertFixControlCharacters(
+            "034|8=FIX.4.2|9=140|35=X|49=LMXBL|56=user|34=59|52=19700101-00:00:00.000|262=123456|268=1|279=1|269=0|55=XYZ|48=349857|22=8|207=LMAX|270=0.00009|271=73.7|290=2|10=037|");
+
+        final ByteBuffer inputStream1 = ByteBuffer.wrap(part1);
+        final ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
+        final ByteBuffer inputStream3 = ByteBuffer.wrap(part3);
+
+        final List<byte[]> messages = new ArrayList<byte[]>();
+
+        final MessageParserCallback callback = createMessageParserCallback(new MyMessageParserCallbackTestFactory(messages));
+        final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
+        parser.initialise(callback);
+
+        parser.parse(inputStream1);
+        parser.parse(inputStream2);
+        parser.parse(inputStream3);
+
+        assertThat(messages.size(), is(3));
+    }
+
+
+    @Test
+    public void shouldParseMessageSegmentContainingNeitherCompleteStartPrefixNorEndSuffix() throws Exception
+    {
+        final byte[] part1 = FixMessageUtil.convertFixControlCharacters("8=FIX.");
+        final byte[] part2 = FixMessageUtil.convertFixControlCharacters("4.2|9=");
+        final byte[] part3 = FixMessageUtil.convertFixControlCharacters("208|10");
+
+        // this segment should be detected as being the boundary between messages, even though
+        // it doesnt contain enough data to be identified as either a message start nor a message end
+        final byte[] part4 = FixMessageUtil.convertFixControlCharacters("=067|8=");
+
+        final byte[] part5 = FixMessageUtil.convertFixControlCharacters("FIX.4.2");
+        final byte[] part6 = FixMessageUtil.convertFixControlCharacters("|9=140|");
+        final byte[] part7 = FixMessageUtil.convertFixControlCharacters("|290=2|");
+        final byte[] part8 = FixMessageUtil.convertFixControlCharacters("10=027|");
+
+        final ByteBuffer inputStream1 = ByteBuffer.wrap(part1);
+        final ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
+        final ByteBuffer inputStream3 = ByteBuffer.wrap(part3);
+        final ByteBuffer inputStream4 = ByteBuffer.wrap(part4);
+        final ByteBuffer inputStream5 = ByteBuffer.wrap(part5);
+        final ByteBuffer inputStream6 = ByteBuffer.wrap(part6);
+        final ByteBuffer inputStream7 = ByteBuffer.wrap(part7);
+        final ByteBuffer inputStream8 = ByteBuffer.wrap(part8);
+
+        final List<byte[]> messages = new ArrayList<byte[]>();
+
+        final MessageParserCallback callback = createMessageParserCallback(new MyMessageParserCallbackTestFactory(messages));
+        final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
+        parser.initialise(callback);
+
+        parser.parse(inputStream1);
+        parser.parse(inputStream2);
+        parser.parse(inputStream3);
+        parser.parse(inputStream4);
+        parser.parse(inputStream5);
+        parser.parse(inputStream6);
+        parser.parse(inputStream7);
+        parser.parse(inputStream8);
+
+        assertThat(messages.size(), is(2));
+
+    }
 
     @Test
     public void shouldParseSingleMessageInSegment()
@@ -416,5 +567,43 @@ public final class FixStreamMessageParserTest
         parser.parse(inputStream);
 
         assertArrayEquals(expectedResult, result);
+    }
+
+    private static MessageParserCallback createMessageParserCallback(final MessageParserCallbackTestFactory impl)
+    {
+        return new MessageParserCallback()
+        {
+            @Override
+            public void onMessage(final byte[] buffer, final int offset, final int length)
+            {
+                impl.onMessage(buffer, offset, length);
+            }
+
+            @Override
+            public void onTruncatedMessage()
+            {
+            }
+
+            @Override
+            public void onParseError(final String error)
+            {
+            }
+        };
+    }
+
+    private static class MyMessageParserCallbackTestFactory implements MessageParserCallbackTestFactory
+    {
+        private final List<byte[]> messages;
+
+        public MyMessageParserCallbackTestFactory(final List<byte[]> messages)
+        {
+            this.messages = messages;
+        }
+
+        @Override
+        public void onMessage(final byte[] buffer, final int offset, final int length)
+        {
+            messages.add(Arrays.copyOfRange(buffer, offset, offset + length));
+        }
     }
 }

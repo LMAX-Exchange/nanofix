@@ -16,6 +16,7 @@
 
 package com.lmax.nanofix.incoming;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 
@@ -97,6 +98,22 @@ public final class FixMessageUtil
     {
         int orderIdOffset = 94;
         ByteUtil.writeLongAsAscii(newOrderSingle, orderIdOffset, orderId);
+    }
+
+    public static byte[] convertFixControlCharacters(String message)
+    {
+        try
+        {
+            byte[] asByteArray = message.getBytes("ASCII");
+            byte[] buffer = new byte[asByteArray.length];
+            System.arraycopy(asByteArray, 0, buffer, 0, asByteArray.length);
+            prepareBuffer(buffer);
+            return buffer;
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException("ASCII not supported by your runtime environment");
+        }
     }
 
     @Test
