@@ -27,3 +27,11 @@
 /.idea/libraries
 /.idea/vcs.xml
 /.idea/workspace.xml
+
+.gradle/
+.idea/
+
+integration-tests/integration-tests.iml
+nanofix-client/build/
+nanofix-client/nanofix-client.iml
+nanofix.iml
