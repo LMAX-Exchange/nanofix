@@ -29,7 +29,7 @@ import com.lmax.nanofix.integration.fixture.SignallingConnectionObserver;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertFalse;
 
 public class FixClientLifecycleTest
 {
