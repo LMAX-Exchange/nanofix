@@ -115,7 +115,7 @@
         <module name="PackageDeclaration" />
 
         <module name="ReturnCount">
-            <property name="max" value="3" />
+            <property name="max" value="5" />
         </module>
 
         <module name="FallThrough" />

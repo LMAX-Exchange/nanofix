@@ -100,6 +100,21 @@ public final class FixMessageUtil
         ByteUtil.writeLongAsAscii(newOrderSingle, orderIdOffset, orderId);
     }
 
+    public static String convertFixControlCharacters(byte[] message)
+    {
+        try
+        {
+            byte[] buffer = new byte[message.length];
+            System.arraycopy(message, 0, buffer, 0, message.length);
+            prepareBufferForStringForm(buffer);
+            return new String(buffer, "ASCII");
+        }
+        catch (UnsupportedEncodingException e)
+        {
+            throw new RuntimeException("ASCII not supported by your runtime environment");
+        }
+    }
+
     public static byte[] convertFixControlCharacters(String message)
     {
         try
@@ -114,6 +129,14 @@ public final class FixMessageUtil
         {
             throw new RuntimeException("ASCII not supported by your runtime environment");
         }
+    }
+
+    private static void prepareBufferForStringForm(final byte[] buffer)
+    {
+        final byte soh = (byte)1;
+        final byte bar = (byte)124;
+
+        ByteUtil.replace(buffer, 0, buffer.length, soh, bar);
     }
 
     @Test
