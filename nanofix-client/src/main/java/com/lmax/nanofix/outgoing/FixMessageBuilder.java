@@ -248,10 +248,6 @@ public class FixMessageBuilder
 
     public FixMessageBuilder append(final int tag, final String value)
     {
-        if (Tags.knownTag(tag))
-        {
-            throw new RuntimeException("Don't use append if there is a builder method, tag: " + tag + " value: " + value);
-        }
         return addTag(tag, value);
     }
 
