@@ -46,6 +46,8 @@ public enum Tags
     TargetCompID(56),
     TestReqID(112),
     TransactTime(60),
+    RawDataLength(95),
+    RawData(96),
     Username(553);
 
     private final int tag;

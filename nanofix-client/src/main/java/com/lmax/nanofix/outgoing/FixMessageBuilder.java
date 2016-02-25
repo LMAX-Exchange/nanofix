@@ -40,6 +40,8 @@ import static com.lmax.nanofix.fields.Tags.OrderQty;
 import static com.lmax.nanofix.fields.Tags.OrigSendingTime;
 import static com.lmax.nanofix.fields.Tags.Password;
 import static com.lmax.nanofix.fields.Tags.Price;
+import static com.lmax.nanofix.fields.Tags.RawData;
+import static com.lmax.nanofix.fields.Tags.RawDataLength;
 import static com.lmax.nanofix.fields.Tags.RefMsgType;
 import static com.lmax.nanofix.fields.Tags.RefSeqNum;
 import static com.lmax.nanofix.fields.Tags.ResetSeqNumFlag;
@@ -168,6 +170,12 @@ public class FixMessageBuilder
     public FixMessageBuilder heartBtInt(final int heartbeatInterval)
     {
         return addTag(HeartBtInt.getTag(), Integer.toString(heartbeatInterval));
+    }
+
+    public FixMessageBuilder rawData(final String data)
+    {
+        addTag(RawDataLength.getTag(), Integer.toString(data.length()));
+        return addTag(RawData.getTag(), data);
     }
 
     public FixMessageBuilder encryptMethod(final EncryptMethod encryptMethod)
