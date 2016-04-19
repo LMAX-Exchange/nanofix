@@ -70,18 +70,6 @@ public class TcpTransport implements Transport, ConnectionObserver
         acceptNewConnection();
     }
 
-    private void acceptNewConnection()
-    {
-        asyncTcpSocketFactory.createSocketOnIncomingConnection(serverSocketChannel, new SocketFactory.SocketEstablishedCallback()
-        {
-            @Override
-            public void onSocketEstablished(final SocketChannel socketChannel)
-            {
-                TcpTransport.this.socketChannel = socketChannel;
-                publishingTransportObserver.connectionEstablished();
-            }
-        });
-    }
 
     @Override
     public void stopListening()
@@ -188,5 +176,18 @@ public class TcpTransport implements Transport, ConnectionObserver
                 acceptNewConnection();
             }
         }
+    }
+
+    private void acceptNewConnection()
+    {
+        asyncTcpSocketFactory.createSocketOnIncomingConnection(serverSocketChannel, new SocketFactory.SocketEstablishedCallback()
+        {
+            @Override
+            public void onSocketEstablished(final SocketChannel socketChannel)
+            {
+                TcpTransport.this.socketChannel = socketChannel;
+                publishingTransportObserver.connectionEstablished();
+            }
+        });
     }
 }
