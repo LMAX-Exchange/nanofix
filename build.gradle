@@ -26,8 +26,6 @@ allprojects {
     sourceCompatibility = 1.6
     targetCompatibility = 1.6
 
-    group = 'com.lmax'
-
 
 
     ext {
@@ -36,9 +34,6 @@ allprojects {
         teamName = 'LMAX Development Team'
         siteUrl = 'https://github.com/LMAX-Exchange/nanofix'
         sourceUrl = 'https://github.com/LMAX-Exchange/nanofix.git'
-
-        javaCompilerExecutable = System.env['JAVA_HOME'] ? System.env['JAVA_HOME'] + '/bin/javac' : 'javac'
-
     }
 
     group = 'com.lmax.nanofix'
