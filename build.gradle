@@ -37,7 +37,6 @@ allprojects {
     }
 
     group = 'com.lmax.nanofix'
-    sourceCompatibility = 1.6
 
     version = resolveVersion()
 
