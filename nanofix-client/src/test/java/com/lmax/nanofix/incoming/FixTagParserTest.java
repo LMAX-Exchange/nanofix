@@ -18,128 +18,115 @@ package com.lmax.nanofix.incoming;
 
 import java.io.UnsupportedEncodingException;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.States;
-import org.jmock.integration.junit4.JMock;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.BDDMockito;
+import org.mockito.InOrder;
 
-@RunWith(JMock.class)
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
+
 public final class FixTagParserTest
 {
-    private final Mockery context = new Mockery();
+
+    private FixTagHandler fixTagHandler;
+
+    @Before
+    public void setUp() throws Exception
+    {
+        fixTagHandler = mock(FixTagHandler.class);
+    }
 
     @Test
     public void shouldCountTagsCorrectlyInMessage()
     {
-        byte[] logonMsg = FixMessageUtil.getLogonMessage();
-        final FixTagHandler fixTagHandler = context.mock(FixTagHandler.class);
 
-        context.checking(new Expectations()
-        {
-            {
-                oneOf(fixTagHandler).messageStart();
+        given(fixTagHandler.isFinished()).willReturn(false);
 
-                exactly(13).of(fixTagHandler).onTag(with(any(int.class)), with(any(byte[].class)), with(any(int.class)), with(any(int.class)));
+        final byte[] logonMsg = FixMessageUtil.getLogonMessage();
 
-                exactly(13).of(fixTagHandler).isFinished();
-                will(returnValue(Boolean.valueOf(false)));
-
-                oneOf(fixTagHandler).messageEnd();
-            }
-        });
-
-        FixTagParser parser = new FixTagParser(fixTagHandler);
+        final FixTagParser parser = new FixTagParser(fixTagHandler);
 
         parser.parse(logonMsg, 0, logonMsg.length, true);
+
+        verify(fixTagHandler).messageStart();
+        verify(fixTagHandler, times(13)).onTag(any(int.class), any(byte[].class), any(int.class), any(int.class));
+        verify(fixTagHandler, times(13)).isFinished();
+        verify(fixTagHandler).messageEnd();
+
+        verifyNoMoreInteractions(fixTagHandler);
     }
 
     @Test
     public void shouldCountTagsSeparatedByMultipleSeparatorsMessage() throws UnsupportedEncodingException
     {
+        given(fixTagHandler.isFinished()).willReturn(false);
+
         final byte[] msg = "8=FIX.4.2\u00019=105|35=A|34=1|49=marketm155yjtfwicmfe\u000152=20100713-17:04:39.641|56=FIX-API|95=9|96=P4ssword.|98=0\u0001108=2|141=Y|10=191|".getBytes("US-ASCII");
-        byte[] logonMsg = new byte[msg.length];
+        final byte[] logonMsg = new byte[msg.length];
         System.arraycopy(msg, 0, logonMsg, 0, msg.length);
-        final FixTagHandler fixTagHandler = context.mock(FixTagHandler.class);
 
-        context.checking(new Expectations()
-        {
-            {
-                oneOf(fixTagHandler).messageStart();
-
-                exactly(13).of(fixTagHandler).onTag(with(any(int.class)), with(any(byte[].class)), with(any(int.class)), with(any(int.class)));
-
-                exactly(13).of(fixTagHandler).isFinished();
-                will(returnValue(Boolean.valueOf(false)));
-
-                oneOf(fixTagHandler).messageEnd();
-            }
-        });
-
-        FixTagParser parser = new FixTagParser(fixTagHandler, new byte[]{1, 124});
+        final FixTagParser parser = new FixTagParser(fixTagHandler, new byte[]{1, 124});
 
         parser.parse(logonMsg, 0, logonMsg.length, true);
+
+        verify(fixTagHandler).messageStart();
+        verify(fixTagHandler, times(13)).onTag(any(int.class), any(byte[].class), any(int.class), any(int.class));
+        verify(fixTagHandler, times(13)).isFinished();
+        verify(fixTagHandler).messageEnd();
+
+        verifyNoMoreInteractions(fixTagHandler);
     }
 
     @Test
     public void shouldReportFirstThreeTags()
     {
+        given(fixTagHandler.isFinished()).willReturn(false);
+
         final byte[] logonMsg = FixMessageUtil.getLogonMessage();
-        final FixTagHandler fixTagHandler = context.mock(FixTagHandler.class);
 
-        context.checking(new Expectations()
-        {
-            {
-                oneOf(fixTagHandler).messageStart();
-
-                oneOf(fixTagHandler).onTag(8, logonMsg, 2, 7);
-                oneOf(fixTagHandler).onTag(9, logonMsg, 12, 3);
-                oneOf(fixTagHandler).onTag(35, logonMsg, 19, 1);
-
-                exactly(3).of(fixTagHandler).isFinished();
-                will(returnValue(Boolean.valueOf(false)));
-
-                oneOf(fixTagHandler).messageEnd();
-            }
-        });
-
-        FixTagParser parser = new FixTagParser(fixTagHandler);
+        final FixTagParser parser = new FixTagParser(fixTagHandler);
 
         parser.parse(logonMsg, 0, 21, true);
+
+        verify(fixTagHandler).messageStart();
+        verify(fixTagHandler).onTag(8, logonMsg, 2, 7);
+        verify(fixTagHandler).onTag(9, logonMsg, 12, 3);
+        verify(fixTagHandler).onTag(35, logonMsg, 19, 1);
+        verify(fixTagHandler, times(3)).isFinished();
+        verify(fixTagHandler).messageEnd();
+
+        verifyNoMoreInteractions(fixTagHandler);
     }
 
     @Test
     public void shouldStopReadingWhenTheMessageIsNotLogon()
     {
         final byte[] newOrderSingleMsg = FixMessageUtil.getNewOrderSingle();
-        final FixTagHandler fixTagHandler = context.mock(FixTagHandler.class);
-        final States messageType = context.states("messageType").startsAs("unidentified");
 
-        context.checking(new Expectations()
-        {
-            {
-                oneOf(fixTagHandler).messageStart();
+        final InOrder inOrder = BDDMockito.inOrder(fixTagHandler);
 
-                oneOf(fixTagHandler).onTag(8, newOrderSingleMsg, 2, 7);
-                oneOf(fixTagHandler).onTag(9, newOrderSingleMsg, 12, 3);
-                oneOf(fixTagHandler).onTag(35, newOrderSingleMsg, 19, 1);
-                then(messageType.is("known"));
+        given(fixTagHandler.isFinished()).willReturn(false).willReturn(false).willReturn(true);
 
-                exactly(2).of(fixTagHandler).isFinished();
-                when(messageType.is("unidentified"));
-                will(returnValue(Boolean.valueOf(false)));
-
-                oneOf(fixTagHandler).isFinished();
-                when(messageType.is("known"));
-                will(returnValue(Boolean.valueOf(true)));
-
-                oneOf(fixTagHandler).messageEnd();
-            }
-        });
-
-        FixTagParser parser = new FixTagParser(fixTagHandler);
-
+        final FixTagParser parser = new FixTagParser(fixTagHandler);
         parser.parse(newOrderSingleMsg, 0, newOrderSingleMsg.length, true);
+
+        inOrder.verify(fixTagHandler).messageStart();
+
+        inOrder.verify(fixTagHandler).onTag(8, newOrderSingleMsg, 2, 7);
+        inOrder.verify(fixTagHandler, times(1)).isFinished();
+
+        inOrder.verify(fixTagHandler).onTag(9, newOrderSingleMsg, 12, 3);
+        inOrder.verify(fixTagHandler, times(1)).isFinished();
+
+        inOrder.verify(fixTagHandler).onTag(35, newOrderSingleMsg, 19, 1);
+        inOrder.verify(fixTagHandler, times(1)).isFinished();
+
+        inOrder.verify(fixTagHandler).messageEnd();
     }
 }
