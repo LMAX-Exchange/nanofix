@@ -16,8 +16,6 @@
 
 package com.lmax.nanofix.incoming;
 
-import com.lmax.nanofix.MessageParserCallback;
-
 import org.apache.log4j.Logger;
 
 public class RawFixMessageHandler implements MessageParserCallback

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lmax.nanofix;
+package com.lmax.nanofix.incoming;
 
 public interface MessageParserCallback
 {

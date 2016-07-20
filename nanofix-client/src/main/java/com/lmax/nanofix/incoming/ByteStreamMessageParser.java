@@ -18,8 +18,6 @@ package com.lmax.nanofix.incoming;
 
 import java.nio.ByteBuffer;
 
-import com.lmax.nanofix.MessageParserCallback;
-
 public interface ByteStreamMessageParser
 {
     void parse(final ByteBuffer segment);

@@ -1,7 +1,6 @@
 package com.lmax.nanofix.incoming;
 
 import com.google.common.primitives.Bytes;
-import com.lmax.nanofix.MessageParserCallback;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
