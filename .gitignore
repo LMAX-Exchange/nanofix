@@ -27,9 +27,14 @@
 /.idea/libraries
 /.idea/vcs.xml
 /.idea/workspace.xml
+/.idea/gradle.xml
+/.idea/misc.xml
+/.idea/modules.xml
+/.idea/uiDesigner.xml
+*.iml
+/nanofix.ipr
 
 .gradle/
-.idea/
 
 integration-tests/integration-tests.iml
 nanofix-client/build/

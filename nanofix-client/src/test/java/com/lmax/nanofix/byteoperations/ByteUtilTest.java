@@ -17,6 +17,7 @@
 package com.lmax.nanofix.byteoperations;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,25 +69,25 @@ public class ByteUtilTest
         }
 
         @Test
-        public void shouldWriteLongAsAscii() throws Exception
+        public void shouldWriteLongAsAscii()
         {
             final byte[] longAsAsciiBytes = new byte[19];
 
             final int offset = 0;
             ByteUtil.writeLongAsAscii(longAsAsciiBytes, offset, 0L);
-            assertArrayEquals("0000000000000000000".getBytes("ASCII"), longAsAsciiBytes);
+            assertArrayEquals("0000000000000000000".getBytes(StandardCharsets.US_ASCII), longAsAsciiBytes);
 
             ByteUtil.writeLongAsAscii(longAsAsciiBytes, offset, 7L);
-            assertArrayEquals("0000000000000000007".getBytes("ASCII"), longAsAsciiBytes);
+            assertArrayEquals("0000000000000000007".getBytes(StandardCharsets.US_ASCII), longAsAsciiBytes);
 
             ByteUtil.writeLongAsAscii(longAsAsciiBytes, offset, 900000000000000000L);
-            assertArrayEquals("0900000000000000000".getBytes("ASCII"), longAsAsciiBytes);
+            assertArrayEquals("0900000000000000000".getBytes(StandardCharsets.US_ASCII), longAsAsciiBytes);
 
             ByteUtil.writeLongAsAscii(longAsAsciiBytes, offset, 99999999999999999L);
-            assertArrayEquals("0099999999999999999".getBytes("ASCII"), longAsAsciiBytes);
+            assertArrayEquals("0099999999999999999".getBytes(StandardCharsets.US_ASCII), longAsAsciiBytes);
 
             ByteUtil.writeLongAsAscii(longAsAsciiBytes, offset, 899999999999999999L);
-            assertArrayEquals("0899999999999999999".getBytes("ASCII"), longAsAsciiBytes);
+            assertArrayEquals("0899999999999999999".getBytes(StandardCharsets.US_ASCII), longAsAsciiBytes);
         }
 
         @Test(expected = IllegalArgumentException.class)
@@ -116,21 +117,21 @@ public class ByteUtilTest
         @Test
         public void shouldIdentifyDigitsInAsciiCharacters() throws UnsupportedEncodingException
         {
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("0".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("1".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("2".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("3".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("4".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("5".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("6".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("7".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("8".getBytes("ASCII")[0]));
-            assertTrue("Is a digit", ByteUtil.isAsciiDigit("9".getBytes("ASCII")[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("0".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("1".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("2".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("3".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("4".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("5".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("6".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("7".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("8".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertTrue("Is a digit", ByteUtil.isAsciiDigit("9".getBytes(StandardCharsets.US_ASCII)[0]));
 
-            assertFalse("Not a digit", ByteUtil.isAsciiDigit("/".getBytes("ASCII")[0]));
-            assertFalse("Not a digit", ByteUtil.isAsciiDigit("A".getBytes("ASCII")[0]));
-            assertFalse("Not a digit", ByteUtil.isAsciiDigit("z".getBytes("ASCII")[0]));
-            assertFalse("Not a digit", ByteUtil.isAsciiDigit(";".getBytes("ASCII")[0]));
+            assertFalse("Not a digit", ByteUtil.isAsciiDigit("/".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertFalse("Not a digit", ByteUtil.isAsciiDigit("A".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertFalse("Not a digit", ByteUtil.isAsciiDigit("z".getBytes(StandardCharsets.US_ASCII)[0]));
+            assertFalse("Not a digit", ByteUtil.isAsciiDigit(";".getBytes(StandardCharsets.US_ASCII)[0]));
         }
 
         @Test
@@ -166,14 +167,14 @@ public class ByteUtilTest
         @Test
         public void shouldConfirmIsIntegerValue() throws UnsupportedEncodingException
         {
-            final byte[] bytes = "123".getBytes("ASCII");
+            final byte[] bytes = "123".getBytes(StandardCharsets.US_ASCII);
             assertTrue(ByteUtil.isInteger(bytes, 0, bytes.length));
         }
 
         @Test
         public void shouldConfirmIsNotIntegerValue() throws UnsupportedEncodingException
         {
-            final byte[] bytes = "1;3".getBytes("ASCII");
+            final byte[] bytes = "1;3".getBytes(StandardCharsets.US_ASCII);
             assertFalse(ByteUtil.isInteger(bytes, 0, bytes.length));
         }
 
@@ -181,8 +182,8 @@ public class ByteUtilTest
         public void shouldReplaceSohWithBar()
                 throws Exception
         {
-            final byte[] source = "A test string \u0001 containing \u0001 ASCII SOH\u0001".getBytes("ASCII");
-            final byte[] expected = "A test string | containing | ASCII SOH|".getBytes("ASCII");
+            final byte[] source = "A test string \u0001 containing \u0001 ASCII SOH\u0001".getBytes(StandardCharsets.US_ASCII);
+            final byte[] expected = "A test string | containing | ASCII SOH|".getBytes(StandardCharsets.US_ASCII);
 
             final byte soh = (byte) 1;
             final byte bar = (byte) 124;
@@ -200,7 +201,7 @@ public class ByteUtilTest
 
             ByteUtil.asciiEncode(testSequence, 0, result, 0, result.length);
 
-            assertArrayEquals(testSequence.getBytes("ASCII"), result);
+            assertArrayEquals(testSequence.getBytes(StandardCharsets.US_ASCII), result);
         }
 
         @Test(expected = IllegalArgumentException.class)
@@ -217,7 +218,7 @@ public class ByteUtilTest
         private void checkIntegerEncodedAsAsciiValue(final String integerAsString)
                 throws UnsupportedEncodingException
         {
-            final byte[] bytes = integerAsString.getBytes("ASCII");
+            final byte[] bytes = integerAsString.getBytes(StandardCharsets.US_ASCII);
             final int value = ByteUtil.readIntFromAscii(bytes, 0, bytes.length);
             assertEquals(Integer.parseInt(integerAsString), value);
         }
@@ -225,7 +226,7 @@ public class ByteUtilTest
         private void checkLongEncodedAsAsciiValue(final String longAsString)
                 throws UnsupportedEncodingException
         {
-            final byte[] bytes = longAsString.getBytes("ASCII");
+            final byte[] bytes = longAsString.getBytes(StandardCharsets.US_ASCII);
             final long value = ByteUtil.readLongFromAscii(bytes, 0, bytes.length);
             assertEquals(Long.parseLong(longAsString), value);
         }

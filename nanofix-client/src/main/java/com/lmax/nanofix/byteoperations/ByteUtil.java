@@ -16,6 +16,8 @@
 
 package com.lmax.nanofix.byteoperations;
 
+import java.nio.charset.StandardCharsets;
+
 public final class ByteUtil
 {
     public static final int MAX_UNSIGNED_SHORT = (1 << 16) - 1;
@@ -182,7 +184,7 @@ public final class ByteUtil
 
             if (charValue > 127)
             {
-                throw new IllegalArgumentException("Character " + chars.charAt(i + charOffset) + " is not US-ASCII");
+                throw new IllegalArgumentException("Character " + chars.charAt(i + charOffset) + " is not " + StandardCharsets.US_ASCII);
             }
 
             buffer[i + bufferOffset] = (byte) charValue;

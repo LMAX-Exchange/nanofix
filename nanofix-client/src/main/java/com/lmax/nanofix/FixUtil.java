@@ -17,6 +17,7 @@
 package com.lmax.nanofix;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.lmax.nanofix.incoming.FixTagParser;
 
@@ -30,14 +31,7 @@ public final class FixUtil
 
     static
     {
-        try
-        {
-            ASCII_CHARSET = Charset.forName("ASCII");
-        }
-        catch (Exception ex)
-        {
-            throw new RuntimeException(ex);
-        }
+            ASCII_CHARSET = StandardCharsets.US_ASCII;
     }
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("YYYYMMdd-HH:mm:ss.SSS").withZone(DateTimeZone.UTC);
