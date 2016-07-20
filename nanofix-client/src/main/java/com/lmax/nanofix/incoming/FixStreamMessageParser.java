@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
 public final class FixStreamMessageParser
     implements ByteStreamMessageParser
 {
-    private static final Logger LOGGER = Logger.getLogger(FixStreamMessageParser.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FixStreamMessageParser.class);
 
     public static final byte ASCII_SOH = 1;
     public static final byte ASCII_0 = 48;
