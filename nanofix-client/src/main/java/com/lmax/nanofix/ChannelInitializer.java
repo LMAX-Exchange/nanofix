@@ -16,6 +16,7 @@
 
 package com.lmax.nanofix;
 
+import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 
@@ -54,13 +55,14 @@ class ChannelInitializer implements ConnectionObserver
             @Override
             public void run()
             {
+                final ReadableByteChannel readableByteChannel = transport.getReadableByteChannel();
                 try
                 {
-                    inputStreamReader.blockingStart(transport.getReadableByteChannel());
+                    inputStreamReader.blockingStart(readableByteChannel);
                 }
                 catch (RuntimeException e)
                 {
-                    LOGGER.error("Exception thrown while reading from stream: ", e);
+                    LOGGER.error("Exception thrown while reading from stream, channel: " + readableByteChannel, e);
                 }
             }
         });
