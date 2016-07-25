@@ -39,15 +39,6 @@ allprojects {
     group = 'com.lmax.nanofix'
 
     version = resolveVersion()
-
-    jar {
-        manifest.attributes('Built-By': System.properties['user.name'],
-                            'Bundle-Name': fullName,
-                            'Bundle-Vendor': teamName,
-                            'Bundle-Description': fullDescription,
-                            'Bundle-DocURL': siteUrl)
-    }
-
 }
 
 Version resolveVersion()
@@ -81,6 +72,13 @@ subprojects {
 
     }
 
+    jar {
+        manifest.attributes('Built-By': System.properties['user.name'],
+                'Bundle-Name': fullName,
+                'Bundle-Vendor': teamName,
+                'Bundle-Description': fullDescription,
+                'Bundle-DocURL': siteUrl)
+    }
 
     task sourcesJar(type: Jar) {
         classifier = 'sources'
