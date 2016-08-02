@@ -26,11 +26,13 @@ import java.util.concurrent.ExecutorService;
 
 import com.lmax.nanofix.exceptions.GeneralRuntimeException;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class AsyncTcpSocketFactory implements SocketFactory
 {
-    private static final Logger LOGGER = Logger.getLogger(AsyncTcpSocketFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncTcpSocketFactory.class);
     private static final int SINGLE_CONNECTION_BACKLOG = 1;
     private final ExecutorService executorService;
 

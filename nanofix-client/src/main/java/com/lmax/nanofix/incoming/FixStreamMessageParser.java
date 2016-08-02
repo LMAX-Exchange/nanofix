@@ -18,14 +18,16 @@ package com.lmax.nanofix.incoming;
 
 import com.lmax.nanofix.FixUtil;
 import com.lmax.nanofix.byteoperations.Bits;
-import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FixStreamMessageParser
     implements ByteStreamMessageParser
 {
-    private static final Logger LOGGER = Logger.getLogger(FixStreamMessageParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FixStreamMessageParser.class);
 
     public static final byte ASCII_SOH = 1;
     public static final byte ASCII_0 = 48;

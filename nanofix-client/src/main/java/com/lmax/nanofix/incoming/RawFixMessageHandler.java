@@ -16,11 +16,13 @@
 
 package com.lmax.nanofix.incoming;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RawFixMessageHandler implements MessageParserCallback
 {
-    private static final Logger LOGGER = Logger.getLogger(RawFixMessageHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RawFixMessageHandler.class);
     private final FixTagParser fixTagParser;
 
     public RawFixMessageHandler(final FixTagParser fixTagParser)

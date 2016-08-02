@@ -22,12 +22,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class TcpTransport implements Transport, ConnectionObserver
 {
 
-    private static final Logger LOGGER = Logger.getLogger(TcpTransport.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TcpTransport.class);
 
     private final PublishingConnectionObserver publishingTransportObserver;
     private final TransportConfig transportConfig;

@@ -35,11 +35,13 @@ import com.lmax.nanofix.transport.SocketFactory;
 import com.lmax.nanofix.transport.TcpTransport;
 import com.lmax.nanofix.transport.Transport;
 import com.lmax.nanofix.transport.TransportConfigImpl;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class FixClientFactory
 {
-    private static final Logger LOGGER = Logger.getLogger(FixClientFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FixClientFactory.class);
 
     private static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler()
     {
