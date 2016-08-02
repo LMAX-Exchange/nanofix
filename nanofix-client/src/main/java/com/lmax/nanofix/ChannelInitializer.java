@@ -25,11 +25,13 @@ import com.lmax.nanofix.outgoing.OutboundMessageHandler;
 import com.lmax.nanofix.transport.ConnectionObserver;
 import com.lmax.nanofix.transport.Transport;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 class ChannelInitializer implements ConnectionObserver
 {
-    private static final Logger LOGGER = Logger.getLogger(ChannelInitializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInitializer.class);
     private final Transport transport;
     private final ByteChannelReader inputStreamReader;
     private final OutboundMessageHandler outboundMessageSender;

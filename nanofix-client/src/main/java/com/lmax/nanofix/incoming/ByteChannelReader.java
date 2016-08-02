@@ -24,11 +24,12 @@ import java.nio.channels.ReadableByteChannel;
 import com.lmax.nanofix.concurrent.Blocker;
 import com.lmax.nanofix.transport.ConnectionObserver;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ByteChannelReader
 {
-    private static final Logger LOGGER = Logger.getLogger(ByteChannelReader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ByteChannelReader.class);
     private static final int BUFFER_SIZE = 1024;
     private final ByteStreamMessageParser byteStreamMessageParser;
     private final Blocker blocker;
