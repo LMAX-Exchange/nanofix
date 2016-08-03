@@ -64,6 +64,8 @@ Usage as a TCP connection listener
             }
         });
 
+        listeningClient.listen();
+
         listeningClient.registerTransportObserver(new ConnectionObserver() {
             @Override
             public void connectionEstablished() {
