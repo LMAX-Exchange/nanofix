@@ -56,7 +56,11 @@ import static com.lmax.nanofix.fields.Tags.TestReqID;
 import static com.lmax.nanofix.fields.Tags.TransactTime;
 import static com.lmax.nanofix.fields.Tags.Username;
 
-
+/**
+ * FixMessageBuilder used for constructing messages to be sent.
+ * All fix tags & values are appended to the fix message in the order that they are specified.
+ * Care must be taken to ensure the order of fields is valid for the version of the FIX protocol being used.
+ */
 public class FixMessageBuilder
 {
     private static final String SOH = "\u0001";
@@ -66,11 +70,19 @@ public class FixMessageBuilder
     private String messageLengthOverride;
     private String checksumOverride;
 
+    /**
+     * Constructs a MessageBuilder for FIX messages with a version 4.4 begin string.
+     */
     public FixMessageBuilder()
     {
         this("FIX.4.4");
     }
 
+    /**
+     *  Constructs a MessageBuilder with the specified begin string
+     *
+     * @param version The FIX Begin String (fix tag 8) to be used in the msg.
+     */
     public FixMessageBuilder(final String version)
     {
         this.version = version;
@@ -259,6 +271,14 @@ public class FixMessageBuilder
         return addTag(tag, value);
     }
 
+    public FixMessage build()
+    {
+        final String body = msg.toString();
+        final String messageWithHeader = "8=" + version + SOH + "9=" + messageLength(body) + SOH + body;
+        final String messageWithChecksum = messageWithHeader + "10=" + checksum(messageWithHeader) + SOH;
+        return new FixMessage(messageWithChecksum);
+    }
+
     private FixMessageBuilder addTag(final int tag, final String value)
     {
         msg.append(tag);
@@ -266,14 +286,6 @@ public class FixMessageBuilder
         msg.append(value);
         msg.append(SOH);
         return this;
-    }
-
-    public FixMessage build()
-    {
-        final String body = msg.toString();
-        final String messageWithHeader = "8=" + version + SOH + "9=" + messageLength(body) + SOH + body;
-        final String messageWithChecksum = messageWithHeader + "10=" + checksum(messageWithHeader) + SOH;
-        return new FixMessage(messageWithChecksum);
     }
 
     private String checksum(final String bodyWithLength)
