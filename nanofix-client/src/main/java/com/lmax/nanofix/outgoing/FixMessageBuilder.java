@@ -58,7 +58,9 @@ import static com.lmax.nanofix.fields.Tags.Username;
 
 /**
  * FixMessageBuilder used for constructing messages to be sent.
- * All fix tags & values are appended to the fix message in the order that they are specified.
+ * Tags 8 BeginString, 9 MessageLength and 10 CheckSum are automatically appended in the correct order.
+ * The message length and checksum can be overridden with the {@link #overrideMessageLength(String)}. and {@link #overrideChecksum(String)} methods.
+ * All other fix tags & values are appended to the fix message in the order that they are specified.
  * Care must be taken to ensure the order of fields is valid for the version of the FIX protocol being used.
  */
 public class FixMessageBuilder
@@ -88,6 +90,28 @@ public class FixMessageBuilder
         this.version = version;
     }
 
+    /**
+     * Allows overriding of the calculated message length
+     * @param messageLengthOverride The value of the (9) message length tag.
+     * @return FixMessageBuilder
+     */
+    public FixMessageBuilder overrideMessageLength(final String messageLengthOverride)
+    {
+        this.messageLengthOverride = messageLengthOverride;
+        return this;
+    }
+
+    /**
+     * Allows overriding of the calculated checksum.
+     * @param checksumOverride The value of the (10) checksum tag.
+     * @return FixMessageBuilder
+     */
+    public FixMessageBuilder overrideChecksum(final String checksumOverride)
+    {
+        this.checksumOverride = checksumOverride;
+        return this;
+    }
+
     public FixMessageBuilder messageType(final String type)
     {
         if (MsgType.knownMsgType(type))
@@ -95,18 +119,6 @@ public class FixMessageBuilder
             throw new RuntimeException("Please use the MsgType enumeration");
         }
         return addTag(Tags.MsgType.getTag(), type);
-    }
-
-    public FixMessageBuilder overrideMessageLength(final String messageLengthOverride)
-    {
-        this.messageLengthOverride = messageLengthOverride;
-        return this;
-    }
-
-    public FixMessageBuilder overrideChecksum(final String checksumOverride)
-    {
-        this.checksumOverride = checksumOverride;
-        return this;
     }
 
     public FixMessageBuilder account(final String account)
