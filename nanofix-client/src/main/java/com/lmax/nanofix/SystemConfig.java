@@ -20,7 +20,7 @@ import com.lmax.nanofix.transport.TransportConfig;
 
 public class SystemConfig implements TransportConfig
 {
-    private boolean stayListening;
+    private final boolean stayListening;
 
     /**
      * @param stayListening when set to true, Nanofix will continue listening for additional inbound connections
