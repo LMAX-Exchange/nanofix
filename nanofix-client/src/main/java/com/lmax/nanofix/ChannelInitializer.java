@@ -79,6 +79,7 @@ class ChannelInitializer implements ConnectionObserver
     @Override
     public void connectionClosed()
     {
+        countDownLatch.countDown();
         countDownLatch = new CountDownLatch(1);
     }
 }
