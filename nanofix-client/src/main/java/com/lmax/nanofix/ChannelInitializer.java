@@ -19,6 +19,7 @@ package com.lmax.nanofix;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import com.lmax.nanofix.incoming.ByteChannelReader;
 import com.lmax.nanofix.outgoing.OutboundMessageHandler;
@@ -74,6 +75,11 @@ class ChannelInitializer implements ConnectionObserver
     public void awaitConnection() throws InterruptedException
     {
         countDownLatch.await();
+    }
+
+    public boolean awaitConnection(final long timeout, final TimeUnit units) throws InterruptedException
+    {
+        return countDownLatch.await(timeout, units);
     }
 
     @Override

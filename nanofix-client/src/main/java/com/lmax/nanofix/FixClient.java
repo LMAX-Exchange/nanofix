@@ -17,6 +17,7 @@
 package com.lmax.nanofix;
 
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 import com.lmax.nanofix.concurrent.ThreadBlocker;
 import com.lmax.nanofix.incoming.FixMessageHandler;
@@ -95,6 +96,25 @@ public class FixClient
         try
         {
             channelInitializer.awaitConnection();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException("Interrupted while waiting for channel initialization");
+        }
+    }
+
+    /**
+     * Initiates a TCP connection with the remote host specified on construction..
+     *
+     * @param timeout the time to wait for a connection to be established
+     * @param units   the {@link TimeUnit unit} of the timeout
+     */
+    public boolean connect(final long timeout, final TimeUnit units)
+    {
+        transportOps.connect();
+        try
+        {
+            return channelInitializer.awaitConnection(timeout, units);
         }
         catch (InterruptedException e)
         {
