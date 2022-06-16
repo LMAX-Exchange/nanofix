@@ -594,7 +594,7 @@ public final class FixStreamMessageParserTest
     {
         private final List<byte[]> messages;
 
-        public MyMessageParserCallbackTestFactory(final List<byte[]> messages)
+        MyMessageParserCallbackTestFactory(final List<byte[]> messages)
         {
             this.messages = messages;
         }

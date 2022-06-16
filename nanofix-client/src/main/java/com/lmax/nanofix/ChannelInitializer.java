@@ -41,7 +41,7 @@ class ChannelInitializer implements ConnectionObserver
     private volatile CountDownLatch countDownLatch = new CountDownLatch(1);
 
 
-    public ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService)
+    ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService)
     {
         this.channelReaderExecutorService = channelReaderExecutorService;
         this.transport = transport;

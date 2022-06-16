@@ -18,8 +18,8 @@ package com.lmax.nanofix.incoming;
 
 public interface MessageParserCallback
 {
-    void onMessage(final byte[] buffer, int offset, int length);
+    void onMessage(byte[] buffer, int offset, int length);
     void onTruncatedMessage();
-    void onParseError(final String error);
+    void onParseError(String error);
 }
 
