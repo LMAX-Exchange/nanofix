@@ -15,5 +15,5 @@
  */
 
 dependencies {
-    compile project(':nanofix-client')
+    implementation project(':nanofix-client')
 }

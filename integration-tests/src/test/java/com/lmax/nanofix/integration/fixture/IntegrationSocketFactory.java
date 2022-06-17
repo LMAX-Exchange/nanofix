@@ -128,7 +128,7 @@ public class IntegrationSocketFactory implements SocketFactory
     {
         private final ByteChannel byteChannel;
 
-        public StubSocketChannel(final ByteChannel byteChannel)
+        StubSocketChannel(final ByteChannel byteChannel)
         {
             super(null);
             this.byteChannel = byteChannel;
@@ -250,7 +250,7 @@ public class IntegrationSocketFactory implements SocketFactory
     private class StubServerSocketChannel extends DelegatingServerSocketChannel
     {
 
-        public StubServerSocketChannel()
+        StubServerSocketChannel()
         {
             super(null);
         }

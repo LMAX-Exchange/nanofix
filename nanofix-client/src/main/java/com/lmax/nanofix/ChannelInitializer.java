@@ -19,6 +19,7 @@ package com.lmax.nanofix;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 
 import com.lmax.nanofix.incoming.ByteChannelReader;
 import com.lmax.nanofix.outgoing.OutboundMessageHandler;
@@ -40,7 +41,7 @@ class ChannelInitializer implements ConnectionObserver
     private volatile CountDownLatch countDownLatch = new CountDownLatch(1);
 
 
-    public ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService)
+    ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService)
     {
         this.channelReaderExecutorService = channelReaderExecutorService;
         this.transport = transport;
@@ -76,9 +77,15 @@ class ChannelInitializer implements ConnectionObserver
         countDownLatch.await();
     }
 
+    public boolean awaitConnection(final long timeout, final TimeUnit units) throws InterruptedException
+    {
+        return countDownLatch.await(timeout, units);
+    }
+
     @Override
     public void connectionClosed()
     {
+        countDownLatch.countDown();
         countDownLatch = new CountDownLatch(1);
     }
 }

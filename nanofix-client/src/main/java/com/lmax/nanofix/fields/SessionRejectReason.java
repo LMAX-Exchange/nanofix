@@ -33,7 +33,7 @@ public enum SessionRejectReason
 
     private final int code;
 
-    private SessionRejectReason(final int code)
+    SessionRejectReason(final int code)
     {
         this.code = code;
     }

@@ -30,7 +30,7 @@ public interface TransportOperations
 
     boolean isConnected();
 
-    void registerTransportObserver(final ConnectionObserver connectionObserver);
+    void registerTransportObserver(ConnectionObserver connectionObserver);
 
-    void unregisterTransportObserver(final ConnectionObserver connectionObserver);
+    void unregisterTransportObserver(ConnectionObserver connectionObserver);
 }

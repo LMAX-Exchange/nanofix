@@ -23,7 +23,7 @@ public enum Side
 
     private final int code;
 
-    private Side(final int code)
+    Side(final int code)
     {
         this.code = code;
     }

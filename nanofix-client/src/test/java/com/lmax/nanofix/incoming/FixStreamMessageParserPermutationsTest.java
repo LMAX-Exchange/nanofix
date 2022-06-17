@@ -1,6 +1,7 @@
 package com.lmax.nanofix.incoming;
 
 import com.google.common.primitives.Bytes;
+
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -13,7 +14,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+
 import static java.util.Arrays.asList;
+
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -148,8 +152,8 @@ public class FixStreamMessageParserPermutationsTest
         final List<byte[]> messages = new ArrayList<byte[]>();
         final List<Integer> offsetsUsedForIteration = new ArrayList<Integer>();
 
-        final MessageParserCallback callback = new MessageParserCallback(){
-
+        final MessageParserCallback callback = new MessageParserCallback()
+        {
             @Override
             public void onMessage(byte[] buffer, int offset, int length)
             {
@@ -228,7 +232,7 @@ public class FixStreamMessageParserPermutationsTest
                 }
 
                 Iterator<byte[]> it1 = expectedMessages.iterator(), it2 = actualMessages.iterator();
-                for (; it1.hasNext() && it2.hasNext();)
+                for (; it1.hasNext() && it2.hasNext(); )
                 {
                     byte[] expected = it1.next();
                     byte[] actual = it2.next();
@@ -245,9 +249,9 @@ public class FixStreamMessageParserPermutationsTest
             public void describeTo(Description description)
             {
                 description.appendText("Expecting list containing ")
-                            .appendValue(expectedMessages.size())
-                            .appendText(" items: ")
-                            .appendValue(expectedMessages);
+                        .appendValue(expectedMessages.size())
+                        .appendText(" items: ")
+                        .appendValue(expectedMessages);
             }
         };
     }
@@ -263,7 +267,7 @@ public class FixStreamMessageParserPermutationsTest
         private final int minBytesPerSegment;
         private final int maxBytesPerSegment;
 
-        public RandomBytesConsumer(final int minBytesPerSegment, final int maxBytesPerSegment)
+        RandomBytesConsumer(final int minBytesPerSegment, final int maxBytesPerSegment)
         {
             this.minBytesPerSegment = minBytesPerSegment;
             this.maxBytesPerSegment = maxBytesPerSegment;
