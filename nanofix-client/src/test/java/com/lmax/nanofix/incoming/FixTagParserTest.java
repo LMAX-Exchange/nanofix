@@ -17,6 +17,7 @@
 package com.lmax.nanofix.incoming;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -127,6 +128,24 @@ public final class FixTagParserTest
         inOrder.verify(fixTagHandler).onTag(35, newOrderSingleMsg, 19, 1);
         inOrder.verify(fixTagHandler, times(1)).isFinished();
 
+        inOrder.verify(fixTagHandler).messageEnd();
+    }
+
+    @Test
+    public void shouldIgnoreEqualsCharInStringValue()
+    {
+        final byte[] msg = "8=FIX.4.4|9=131|35=j|58=Invalid request type [263=3]|10=029|".getBytes(StandardCharsets.US_ASCII);
+
+        final FixTagParser parser = new FixTagParser(fixTagHandler, new byte[]{124});
+        parser.parse(msg, 0, msg.length, true);
+
+        InOrder inOrder = BDDMockito.inOrder(fixTagHandler);
+        inOrder.verify(fixTagHandler).messageStart();
+        inOrder.verify(fixTagHandler).onTag(8, msg, 2, 7);
+        inOrder.verify(fixTagHandler).onTag(9, msg, 12, 3);
+        inOrder.verify(fixTagHandler).onTag(35, msg, 19, 1);
+        inOrder.verify(fixTagHandler).onTag(58, msg, 24, 28);
+        inOrder.verify(fixTagHandler).onTag(10, msg, 56, 3);
         inOrder.verify(fixTagHandler).messageEnd();
     }
 }

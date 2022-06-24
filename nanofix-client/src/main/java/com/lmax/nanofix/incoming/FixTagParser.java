@@ -46,13 +46,15 @@ public final class FixTagParser
 
         int tagStart = offset;
         int equalsIndex = -1;
+        boolean metFirstAsciiEquals = false;
 
         for (int i = 0; i < length; i++)
         {
             int index = i + offset;
-            if (ASCII_EQUALS == message[index])
+            if (!metFirstAsciiEquals && ASCII_EQUALS == message[index])
             {
                 equalsIndex = index;
+                metFirstAsciiEquals = true;
             }
 
             if (containsLineSeparator(message[index]))
@@ -74,6 +76,7 @@ public final class FixTagParser
                     final int tagValueLength = index - tagValueOffset;
 
                     fixTagHandler.onTag(tagIdentity, message, tagValueOffset, tagValueLength);
+                    metFirstAsciiEquals = false;
 
                     if (fixTagHandler.isFinished())
                     {
