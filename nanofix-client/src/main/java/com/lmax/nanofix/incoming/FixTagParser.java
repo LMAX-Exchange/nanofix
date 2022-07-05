@@ -55,7 +55,7 @@ public final class FixTagParser
                 equalsIndex = index;
             }
 
-            if (containsLineSeparator(message[index]))
+            if (isLineSeparator(message[index]))
             {
                 if (-1 != equalsIndex)
                 {
@@ -91,11 +91,11 @@ public final class FixTagParser
         return true;
     }
 
-    private boolean containsLineSeparator(final byte separator)
+    private boolean isLineSeparator(final byte charByte)
     {
         for (final byte lineSeparator : lineSeparators)
         {
-            if (lineSeparator == separator)
+            if (lineSeparator == charByte)
             {
                 return true;
             }
