@@ -50,12 +50,12 @@ public final class FixTagParser
         for (int i = 0; i < length; i++)
         {
             int index = i + offset;
-            if (ASCII_EQUALS == message[index])
+            if (-1 == equalsIndex && ASCII_EQUALS == message[index])
             {
                 equalsIndex = index;
             }
 
-            if (containsLineSeparator(message[index]))
+            if (isLineSeparator(message[index]))
             {
                 if (-1 != equalsIndex)
                 {
@@ -91,11 +91,11 @@ public final class FixTagParser
         return true;
     }
 
-    private boolean containsLineSeparator(final byte separator)
+    private boolean isLineSeparator(final byte charByte)
     {
         for (final byte lineSeparator : lineSeparators)
         {
-            if (lineSeparator == separator)
+            if (lineSeparator == charByte)
             {
                 return true;
             }
