@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +32,6 @@ import com.lmax.nanofix.transport.TransportClosedException;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -63,9 +63,9 @@ public class OutboundMessageHandlerTest
     public void shouldPlaceMultipleMessagesInSameBuffer() throws Exception
     {
         final FixMessage loginMessage = new FixMessageBuilder().messageType(MsgType.LOGIN).msgSeqNum(1).senderCompID("username").targetCompID("LMXBL").
-                sendingTime(DateTime.parse("19981231-23:58:59.000", DATE_TIME_FORMATTER)).username("username").password("password").heartBtInt(100000).encryptMethod(EncryptMethod.NONE).build();
+                sendingTime(LocalDateTime.parse("19981231-23:58:59.000", DATE_TIME_FORMATTER)).username("username").password("password").heartBtInt(100000).encryptMethod(EncryptMethod.NONE).build();
         final FixMessage logoutMessage = new FixMessageBuilder().messageType(MsgType.LOGOUT).msgSeqNum(2).senderCompID("username").targetCompID("LMXBL").
-                sendingTime(DateTime.parse("19981231-23:59:59.000", DATE_TIME_FORMATTER)).build();
+                sendingTime(LocalDateTime.parse("19981231-23:59:59.000", DATE_TIME_FORMATTER)).build();
         final List<FixMessage> expected = newArrayList(loginMessage, logoutMessage);
 
         mockery.checking(new Expectations()

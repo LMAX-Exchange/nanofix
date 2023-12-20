@@ -18,12 +18,10 @@ package com.lmax.nanofix;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 import com.lmax.nanofix.incoming.FixTagParser;
-
-import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 public final class FixUtil
 {
@@ -34,7 +32,7 @@ public final class FixUtil
             ASCII_CHARSET = StandardCharsets.US_ASCII;
     }
 
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormat.forPattern("YYYYMMdd-HH:mm:ss.SSS").withZone(DateTimeZone.UTC);
+    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss.SSS").withZone(ZoneOffset.UTC);
 
     public static Charset getCharset()
     {
