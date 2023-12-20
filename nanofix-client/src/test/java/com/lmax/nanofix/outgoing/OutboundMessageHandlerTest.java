@@ -21,6 +21,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,10 +65,11 @@ public class OutboundMessageHandlerTest
     @Test
     public void shouldPlaceMultipleMessagesInSameBuffer() throws Exception
     {
+        final ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.parse("19981231-23:58:59.000", DATE_TIME_FORMATTER), ZoneOffset.UTC);
         final FixMessage loginMessage = new FixMessageBuilder().messageType(MsgType.LOGIN).msgSeqNum(1).senderCompID("username").targetCompID("LMXBL").
-                sendingTime(LocalDateTime.parse("19981231-23:58:59.000", DATE_TIME_FORMATTER)).username("username").password("password").heartBtInt(100000).encryptMethod(EncryptMethod.NONE).build();
+                sendingTime(zonedDateTime).username("username").password("password").heartBtInt(100000).encryptMethod(EncryptMethod.NONE).build();
         final FixMessage logoutMessage = new FixMessageBuilder().messageType(MsgType.LOGOUT).msgSeqNum(2).senderCompID("username").targetCompID("LMXBL").
-                sendingTime(LocalDateTime.parse("19981231-23:59:59.000", DATE_TIME_FORMATTER)).build();
+                sendingTime(zonedDateTime.plusMinutes(1)).build();
         final List<FixMessage> expected = newArrayList(loginMessage, logoutMessage);
 
         mockery.checking(new Expectations()
