@@ -18,15 +18,13 @@ package com.lmax.nanofix.outgoing;
 
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
+import java.time.ZonedDateTime;
 
 import com.lmax.nanofix.fields.BusinessRejectionReason;
 import com.lmax.nanofix.fields.EncryptMethod;
 import com.lmax.nanofix.fields.MsgType;
 import com.lmax.nanofix.fields.SessionRejectReason;
 import com.lmax.nanofix.fields.Tags;
-
-import org.joda.time.DateTime;
-
 
 import static com.lmax.nanofix.fields.Tags.BeginSeqNo;
 import static com.lmax.nanofix.fields.Tags.BusinessRejectReason;
@@ -176,9 +174,9 @@ public class FixMessageBuilder
         return addTag(MsgSeqNum.getTag(), msgSeqNum);
     }
 
-    public FixMessageBuilder sendingTime(final DateTime sendingTime)
+    public FixMessageBuilder sendingTime(final ZonedDateTime sendingTime)
     {
-        return addTag(SendingTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.print(sendingTime));
+        return addTag(SendingTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.format(sendingTime));
     }
 
     public FixMessageBuilder username(final String username)
@@ -222,9 +220,9 @@ public class FixMessageBuilder
         return addTag(Side.getTag(), Integer.toString(side.getCode()));
     }
 
-    public FixMessageBuilder transactionTime(final DateTime transactionTime)
+    public FixMessageBuilder transactionTime(final ZonedDateTime transactionTime)
     {
-        return addTag(TransactTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.print(transactionTime));
+        return addTag(TransactTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.format(transactionTime));
     }
 
     public FixMessageBuilder orderQty(final BigDecimal orderQty)
@@ -272,9 +270,9 @@ public class FixMessageBuilder
         return addTag(Tags.PossDupFlag.getTag(), possDup ? "Y" : "N");
     }
 
-    public FixMessageBuilder origSendingTime(final DateTime origSendingTime)
+    public FixMessageBuilder origSendingTime(final ZonedDateTime origSendingTime)
     {
-        return addTag(OrigSendingTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.print(origSendingTime));
+        return addTag(OrigSendingTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.format(origSendingTime));
     }
 
 
