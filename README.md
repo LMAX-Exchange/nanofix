@@ -1,4 +1,4 @@
-Nanofix    [![Build Status](https://travis-ci.org/LMAX-Exchange/nanofix.svg)](https://travis-ci.org/LMAX-Exchange/nanofix)
+Nanofix    [![Java CI with Gradle](https://github.com/LMAX-Exchange/nanofix/actions/workflows/gradle.yml/badge.svg?branch=master)](https://github.com/LMAX-Exchange/nanofix/actions/workflows/gradle.yml)
 ==============
 
 A fix client for testing FIX servers.
