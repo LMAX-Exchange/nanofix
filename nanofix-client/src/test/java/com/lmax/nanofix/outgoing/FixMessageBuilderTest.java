@@ -67,4 +67,15 @@ public class FixMessageBuilderTest
 
         assertThat(fixMessage.toFixString(), is("8=FIX.4.2\u00019=24\u000134=100\u0001123=Y\u000135=4\u000136=10\u000110=065\u0001"));
     }
+
+    @Test
+    public void shouldBuildFixMessageContainingPriceWithTrailingZeros()
+    {
+        FixMessage fixMessage = new FixMessageBuilder("FIX.4.2")
+                .price("10.0000")
+                .build();
+
+        assertThat(fixMessage.toFixString(), is("8=FIX.4.2\u00019=11\u000144=10.0000\u000110=237\u0001"));
+
+    }
 }

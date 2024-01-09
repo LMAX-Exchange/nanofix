@@ -240,6 +240,11 @@ public class FixMessageBuilder
         return addTag(Price.getTag(), price.toPlainString());
     }
 
+    public FixMessageBuilder price(final String price)
+    {
+        return addTag(Price.getTag(), price);
+    }
+
     public FixMessageBuilder securityID(final String symbol)
     {
         return addTag(SecurityID.getTag(), symbol);
