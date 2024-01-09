@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-
-
 allprojects {
     apply plugin: 'checkstyle'
     apply plugin: 'java'
@@ -25,8 +23,6 @@ allprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
-
 
     ext {
         fullName = 'Nanofix'
@@ -38,20 +34,7 @@ allprojects {
 
     group = 'com.lmax.nanofix'
 
-    version = resolveVersion()
-}
-
-Version resolveVersion()
-{
-    String svnRevision = System.env['SVN_REVISION']
-    if (svnRevision)
-    {
-        return new Version(major: 0, minor: 0, revision: Integer.parseInt(svnRevision));
-    }
-    else
-    {
-        return new Version(major: 0, minor: 0, revision: 0, snapshot: true);
-    }
+    version = Version.resolve()
 }
 
 subprojects {
@@ -93,6 +76,8 @@ subprojects {
 
 class Version
 {
+    static final Version NO_VERSION = new Version(major: 0, minor: 0, revision: 0, snapshot: true)
+
     int major, minor = 0, revision = 0
     boolean snapshot
     String stage
@@ -100,5 +85,16 @@ class Version
     String toString()
     {
         "$major.$minor.$revision${stage ? '.' + stage : ''}${snapshot ? '-SNAPSHOT' : ''}"
+    }
+
+    static Version resolve()
+    {
+        String gitVersion = System.getenv('GITHUB_REF')
+        if (!gitVersion) return Version.NO_VERSION
+        def matcher = gitVersion =~ 'refs/tags/v([0-9]+)\\.([0-9]+)\\.([0-9]+)'
+        if (matcher)
+            return new Version(major: Integer.parseInt(matcher.group(1)), minor: Integer.parseInt(matcher.group(2)), revision: Integer.parseInt(matcher.group(3)))
+
+        return NO_VERSION
     }
 }
