@@ -40,3 +40,5 @@ integration-tests/integration-tests.iml
 nanofix-client/build/
 nanofix-client/nanofix-client.iml
 nanofix.iml
+
+.idea

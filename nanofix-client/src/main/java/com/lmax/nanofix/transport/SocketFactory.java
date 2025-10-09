@@ -27,7 +27,7 @@ public interface SocketFactory
 
     void createSocketOnOutgoingConnection(InetSocketAddress socketAddress, SocketEstablishedCallback socketEstablishedCallback);
 
-    public interface SocketEstablishedCallback
+    interface SocketEstablishedCallback
     {
         void onSocketEstablished(SocketChannel socketChannel);
     }
