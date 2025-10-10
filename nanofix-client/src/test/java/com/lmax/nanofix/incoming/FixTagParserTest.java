@@ -19,7 +19,6 @@ package com.lmax.nanofix.incoming;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.BDDMockito;
 import org.mockito.InOrder;
@@ -35,13 +34,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 public final class FixTagParserTest
 {
 
-    private FixTagHandler fixTagHandler;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        fixTagHandler = mock(FixTagHandler.class);
-    }
+    private final FixTagHandler fixTagHandler = mock(FixTagHandler.class);
 
     @Test
     public void shouldCountTagsCorrectlyInMessage()
