@@ -61,7 +61,8 @@ public final class FixTagParserTest
     {
         given(fixTagHandler.isFinished()).willReturn(false);
 
-        final byte[] msg = "8=FIX.4.2\u00019=105|35=A|34=1|49=marketm155yjtfwicmfe\u000152=20100713-17:04:39.641|56=FIX-API|95=9|96=P4ssword.|98=0\u0001108=2|141=Y|10=191|".getBytes("US-ASCII");
+        final byte[] msg = "8=FIX.4.2\u00019=105|35=A|34=1|49=marketm155yjtfwicmfe\u000152=20100713-17:04:39.641|56=FIX-API|95=9|96=P4ssword.|98=0\u0001108=2|141=Y|10=191|"
+                .getBytes(StandardCharsets.US_ASCII);
         final byte[] logonMsg = new byte[msg.length];
         System.arraycopy(msg, 0, logonMsg, 0, msg.length);
 

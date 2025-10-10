@@ -24,163 +24,76 @@ import java.nio.channels.ReadableByteChannel;
 import com.lmax.nanofix.concurrent.ThreadBlocker;
 import com.lmax.nanofix.transport.ConnectionObserver;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.lib.legacy.ClassImposteriser;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
-@RunWith(JMock.class)
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
 public class ByteChannelReaderTest
 {
-
-
-    private ByteChannelReader inputStreamReader;
-    private Mockery mockery = new Mockery();
-    private ReadableByteChannel readableByteChannel;
-    private ByteStreamMessageParser byteStreamMessageParser;
-    private ConnectionObserver connectionObserver;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        mockery.setImposteriser(ClassImposteriser.INSTANCE);
-        readableByteChannel = mockery.mock(ReadableByteChannel.class);
-        byteStreamMessageParser = mockery.mock(ByteStreamMessageParser.class);
-        connectionObserver = mockery.mock(ConnectionObserver.class);
-        inputStreamReader = new ByteChannelReader(byteStreamMessageParser, new ThreadBlocker(), connectionObserver);
-    }
+    private final ReadableByteChannel readableByteChannel = Mockito.mock(ReadableByteChannel.class);
+    private final ByteStreamMessageParser byteStreamMessageParser = Mockito.mock(ByteStreamMessageParser.class);
+    private final ConnectionObserver connectionObserver = Mockito.mock(ConnectionObserver.class);
+    private final ByteChannelReader inputStreamReader = new ByteChannelReader(byteStreamMessageParser, new ThreadBlocker(), connectionObserver);
 
     @Test
     public void shouldPassBytesFromInputStreamToParser() throws Exception
     {
-        mockery.checking(new Expectations()
-        {
-            {
-                ignoring(connectionObserver).connectionClosed();
-                allowing(readableByteChannel).isOpen();
-                will(returnValue(false));
+        given(readableByteChannel.isOpen()).willReturn(false);
+        given(readableByteChannel.read(any(ByteBuffer.class))).willReturn(1, -1);
 
-                one(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(returnValue(1));
-                one(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(returnValue(-1));
-
-                one(byteStreamMessageParser).parse(with(any(ByteBuffer.class)));
-            }
-        });
-
-        //when
         inputStreamReader.blockingStart(readableByteChannel);
+
+        verify(byteStreamMessageParser).parse(any(ByteBuffer.class));
     }
 
     @Test(expected = RuntimeException.class)
     public void shouldCloseInputStreamIfExceptionIsThrownAndInputStreamIsStillOpen() throws Exception
     {
-        mockery.checking(new Expectations()
+        given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new RuntimeException("boom!"));
+        given(readableByteChannel.isOpen()).willReturn(true);
+
+        try
         {
-            {
-                ignoring(connectionObserver).connectionClosed();
-                allowing(byteStreamMessageParser).parse(with(any(ByteBuffer.class)));
-
-                //when
-                one(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(throwException(new RuntimeException("boom!")));
-
-
-                //then
-                one(readableByteChannel).isOpen();
-                will(returnValue(true));
-                one(readableByteChannel).close();
-
-            }
-        });
-
-        //when
-        inputStreamReader.blockingStart(readableByteChannel);
+            inputStreamReader.blockingStart(readableByteChannel);
+        }
+        finally
+        {
+            verify(readableByteChannel).close();
+        }
     }
 
     @Test
     public void shouldNotifyTransportObserverWhenConnectionIsClosed() throws Exception
     {
-        mockery.checking(new Expectations()
-        {
-            {
-                ignoring(readableByteChannel).isOpen();
-                allowing(byteStreamMessageParser).parse(with(any(ByteBuffer.class)));
+        given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new ClosedChannelException());
 
-                //when
-                allowing(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(throwException(new ClosedChannelException()));
-                allowing(readableByteChannel).close();
-
-
-                //then
-                one(connectionObserver).connectionClosed();
-            }
-        });
-
-        //when
         inputStreamReader.blockingStart(readableByteChannel);
+
+        verify(connectionObserver).connectionClosed();
     }
 
     @Test
     public void shouldNotifyTransportObserverWhenIOExceptionIsThrown() throws Exception
     {
-        mockery.checking(new Expectations()
-        {
-            {
-                ignoring(readableByteChannel).isOpen();
-                allowing(byteStreamMessageParser).parse(with(any(ByteBuffer.class)));
+        given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new IOException());
 
-                //when
-                allowing(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(throwException(new IOException()));
-                allowing(readableByteChannel).close();
-
-
-                //then
-                one(connectionObserver).connectionClosed();
-            }
-        });
-
-        //when
         inputStreamReader.blockingStart(readableByteChannel);
+
+        verify(connectionObserver).connectionClosed();
     }
 
     @Test
     public void shouldCloseChannelWhenEndOfStreamIsReached() throws Exception
     {
-        expectEndOfInputStream();
+        given(readableByteChannel.read(any(ByteBuffer.class))).willReturn(-1);
+        given(readableByteChannel.isOpen()).willReturn(true);
 
-        mockery.checking(new Expectations()
-        {
-            {
-                one(readableByteChannel).isOpen();
-                will(returnValue(true));
-
-                one(readableByteChannel).close();
-                one(connectionObserver).connectionClosed();
-            }
-        });
-
-        //when
         inputStreamReader.blockingStart(readableByteChannel);
+
+        verify(readableByteChannel).close();
+        verify(connectionObserver).connectionClosed();
     }
-
-    private void expectEndOfInputStream() throws IOException
-    {
-        mockery.checking(new Expectations()
-        {
-            {
-                one(readableByteChannel).read(with(any(ByteBuffer.class)));
-                will(returnValue(-1));
-            }
-        });
-
-    }
-
-
 }

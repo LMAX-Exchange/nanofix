@@ -18,79 +18,74 @@ package com.lmax.nanofix;
 
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import com.lmax.nanofix.incoming.ByteChannelReader;
 import com.lmax.nanofix.outgoing.OutboundMessageHandler;
 import com.lmax.nanofix.transport.Transport;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.lib.concurrent.DeterministicExecutor;
-import org.jmock.lib.legacy.ClassImposteriser;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
-@RunWith(JMock.class)
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
 public class ChannelInitializerTest
 {
-
-    private Transport transport;
-    private Mockery mockery;
-    private ByteChannelReader byteChannelReader;
-    private OutboundMessageHandler outboundMessageHandler;
-    private DeterministicExecutor deterministicExecutor;
-    private WritableByteChannel writableByteChannel;
-    private ReadableByteChannel readableByteChannel;
+    private final Transport transport = mock(Transport.class);
+    private final ByteChannelReader byteChannelReader = mock(ByteChannelReader.class);
+    private final OutboundMessageHandler outboundMessageHandler = mock(OutboundMessageHandler.class);
+    private final WritableByteChannel writableByteChannel = mock(WritableByteChannel.class);
+    private final ReadableByteChannel readableByteChannel = mock(ReadableByteChannel.class);
 
     @Before
-    public void setUp() throws Exception
+    public void setUp()
     {
-        mockery = new Mockery();
-        mockery.setImposteriser(ClassImposteriser.INSTANCE);
-        transport = mockery.mock(Transport.class);
-        byteChannelReader = mockery.mock(ByteChannelReader.class);
-        outboundMessageHandler = mockery.mock(OutboundMessageHandler.class);
-        writableByteChannel = mockery.mock(WritableByteChannel.class);
-        readableByteChannel = mockery.mock(ReadableByteChannel.class);
-
-        mockery.checking(new Expectations()
-        {
-            {
-                ignoring(writableByteChannel);
-            }
-        });
+        Mockito.ignoreStubs(writableByteChannel);
     }
 
     @Test
-    public void shouldStartByteChannelReaderOnConnectionEstablished() throws Exception
+    public void shouldStartByteChannelReaderOnConnectionEstablished()
     {
-        deterministicExecutor = new DeterministicExecutor();
+        given(transport.getWritableByteChannel()).willReturn(writableByteChannel);
+        given(transport.getReadableByteChannel()).willReturn(readableByteChannel);
+
+        final DeterministicExecutor deterministicExecutor = new DeterministicExecutor();
         final ChannelInitializer channelInitializer = new ChannelInitializer(transport, byteChannelReader, outboundMessageHandler, deterministicExecutor);
-
-        mockery.checking(new Expectations()
-        {
-            {
-                one(transport).getWritableByteChannel();
-                will(returnValue(writableByteChannel));
-
-                one(outboundMessageHandler).initialiseOutboundChannel(writableByteChannel);
-            }
-        });
         channelInitializer.connectionEstablished();
-
-        mockery.checking(new Expectations()
-        {
-            {
-                one(transport).getReadableByteChannel();
-                will(returnValue(readableByteChannel));
-
-                one(byteChannelReader).blockingStart(readableByteChannel);
-            }
-        });
         deterministicExecutor.runPendingCommands();
 
+        verify(outboundMessageHandler).initialiseOutboundChannel(writableByteChannel);
+        verify(byteChannelReader).blockingStart(readableByteChannel);
     }
 
+    private static class DeterministicExecutor implements Executor
+    {
+        private List<Runnable> commands = new ArrayList<>();
+
+        DeterministicExecutor()
+        {
+            super();
+        }
+
+        public void runPendingCommands()
+        {
+            final List<Runnable> commandsToRun = commands;
+            commands = new ArrayList<>();
+
+            for (Runnable command : commandsToRun)
+            {
+                command.run();
+            }
+        }
+
+        public void execute(final Runnable command)
+        {
+            commands.add(command);
+        }
+    }
 }

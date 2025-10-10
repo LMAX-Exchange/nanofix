@@ -18,125 +18,77 @@ package com.lmax.nanofix.transport;
 
 import java.net.InetSocketAddress;
 
-import org.jmock.Expectations;
-import org.jmock.Mockery;
-import org.jmock.integration.junit4.JMock;
-import org.jmock.lib.legacy.ClassImposteriser;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 
-@RunWith(JMock.class)
 public class TcpTransportTest
 {
-
-    private Mockery mockery;
-    private PublishingConnectionObserver publishingTransportObserver;
-    private SocketFactory socketFactory;
-    private DelegatingServerSocketChannel serverSocketChannel;
-    private InetSocketAddress socketAddress;
-
-    @Before
-    public void setUp() throws Exception
-    {
-        mockery = new Mockery();
-        mockery.setImposteriser(ClassImposteriser.INSTANCE);
-        publishingTransportObserver = mockery.mock(PublishingConnectionObserver.class);
-        serverSocketChannel = mockery.mock(DelegatingServerSocketChannel.class);
-        socketFactory = mockery.mock(SocketFactory.class);
-        socketAddress = new InetSocketAddress("host", 222);
-    }
+    private final PublishingConnectionObserver publishingTransportObserver = mock(PublishingConnectionObserver.class);
+    private final SocketFactory socketFactory = mock(SocketFactory.class);
+    private final DelegatingServerSocketChannel serverSocketChannel = mock(DelegatingServerSocketChannel.class);
+    private final InetSocketAddress socketAddress = new InetSocketAddress("host", 222);
 
     @Test
-    public void shouldBindToSocketOnListen() throws Exception
+    public void shouldBindToSocketOnListen()
     {
-        final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
+        given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
 
-        mockery.checking(new Expectations()
-        {
-            {
-                one(socketFactory).bind(socketAddress);
-                will(returnValue(serverSocketChannel));
-                one(socketFactory).createSocketOnIncomingConnection(with(serverSocketChannel), with(any(SocketFactory.SocketEstablishedCallback.class)));
-            }
-        });
+        final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
         tcpTransport.listen();
+
+        verify(socketFactory).createSocketOnIncomingConnection(eq(serverSocketChannel), any(SocketFactory.SocketEstablishedCallback.class));
     }
 
     @Test
     public void shouldRemoveBindOnWhenTheConnectionClosesByDefault() throws Exception
     {
+        given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
+
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
-
-        mockery.checking(new Expectations()
-        {
-            {
-
-                allowing(socketFactory).bind(socketAddress);
-                will(returnValue(serverSocketChannel));
-                allowing(socketFactory).createSocketOnIncomingConnection(with(serverSocketChannel), with(any(SocketFactory.SocketEstablishedCallback.class)));
-
-                one(serverSocketChannel).close();
-            }
-        });
-
         tcpTransport.listen();
         tcpTransport.connectionClosed();
+
+        verify(socketFactory).createSocketOnIncomingConnection(eq(serverSocketChannel), any(SocketFactory.SocketEstablishedCallback.class));
+        verify(serverSocketChannel).close();
     }
 
     @Test
     public void shouldStayBoundOnWhenTheConnectionClosesIfConfiguredToMaintainBind() throws Exception
     {
+        given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
+
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(true));
-
-        mockery.checking(new Expectations()
-        {
-            {
-
-                one(socketFactory).bind(socketAddress);
-                will(returnValue(serverSocketChannel));
-                one(socketFactory).createSocketOnIncomingConnection(with(serverSocketChannel), with(any(SocketFactory.SocketEstablishedCallback.class)));
-
-                never(serverSocketChannel).close();
-                one(socketFactory).createSocketOnIncomingConnection(with(serverSocketChannel), with(any(SocketFactory.SocketEstablishedCallback.class)));
-
-            }
-        });
-
         tcpTransport.listen();
         tcpTransport.connectionClosed();
+
+        verify(socketFactory, times(2)).createSocketOnIncomingConnection(eq(serverSocketChannel), any(SocketFactory.SocketEstablishedCallback.class));
+        verify(serverSocketChannel, never()).close();
     }
 
     @Test
-    public void shouldCreateAnOutboundSocketWhenConnecting() throws Exception
+    public void shouldCreateAnOutboundSocketWhenConnecting()
     {
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
-
-        mockery.checking(new Expectations()
-        {
-            {
-                one(socketFactory).createSocketOnOutgoingConnection(with(socketAddress), with(any(SocketFactory.SocketEstablishedCallback.class)));
-            }
-        });
-
         tcpTransport.connect();
+
+        verify(socketFactory).createSocketOnOutgoingConnection(eq(socketAddress), any(SocketFactory.SocketEstablishedCallback.class));
     }
 
     @Test
-    public void shouldNotAcceptTryAcceptNewConnectionsWhenInitiatingOutboundConnections() throws Exception
+    public void shouldNotAcceptTryAcceptNewConnectionsWhenInitiatingOutboundConnections()
     {
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(true));
-
-        mockery.checking(new Expectations()
-        {
-            {
-                one(socketFactory).createSocketOnOutgoingConnection(with(socketAddress), with(any(SocketFactory.SocketEstablishedCallback.class)));
-            }
-        });
-
         tcpTransport.connect();
         tcpTransport.connectionClosed();
-    }
 
+        verify(socketFactory).createSocketOnOutgoingConnection(eq(socketAddress), any(SocketFactory.SocketEstablishedCallback.class));
+    }
 }
