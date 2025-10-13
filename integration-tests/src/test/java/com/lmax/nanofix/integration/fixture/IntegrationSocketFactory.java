@@ -33,38 +33,29 @@ import java.util.concurrent.Executors;
 import com.lmax.nanofix.transport.DelegatingServerSocketChannel;
 import com.lmax.nanofix.transport.SocketFactory;
 
-public class IntegrationSocketFactory implements SocketFactory
-{
+public class IntegrationSocketFactory implements SocketFactory {
     private ReadableByteChannel readableByteChannel;
     private WritableByteChannel writableByteChannel;
     final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    public IntegrationSocketFactory(final ReadableByteChannel readableByteChannel, final WritableByteChannel writableByteChannel)
-    {
+    public IntegrationSocketFactory(final ReadableByteChannel readableByteChannel, final WritableByteChannel writableByteChannel) {
         this.readableByteChannel = readableByteChannel;
         this.writableByteChannel = writableByteChannel;
     }
 
     @Override
-    public DelegatingServerSocketChannel bind(final InetSocketAddress socketAddress)
-    {
+    public DelegatingServerSocketChannel bind(final InetSocketAddress socketAddress) {
         return new StubServerSocketChannel();
     }
 
     @Override
-    public void createSocketOnIncomingConnection(final DelegatingServerSocketChannel serverSocketChannel, final SocketEstablishedCallback socketEstablishedCallback)
-    {
-        executorService.submit(new Runnable()
-        {
+    public void createSocketOnIncomingConnection(final DelegatingServerSocketChannel serverSocketChannel, final SocketEstablishedCallback socketEstablishedCallback) {
+        executorService.submit(new Runnable() {
             @Override
-            public void run()
-            {
-                try
-                {
+            public void run() {
+                try {
                     socketEstablishedCallback.onSocketEstablished(serverSocketChannel.accept());
-                }
-                catch (Exception e)
-                {
+                } catch (Exception e) {
                     System.err.println("Exception thrown: ");
                     e.printStackTrace(System.err);
                 }
@@ -73,20 +64,14 @@ public class IntegrationSocketFactory implements SocketFactory
     }
 
     @Override
-    public void createSocketOnOutgoingConnection(final InetSocketAddress socketAddress, final SocketEstablishedCallback socketEstablishedCallback)
-    {
+    public void createSocketOnOutgoingConnection(final InetSocketAddress socketAddress, final SocketEstablishedCallback socketEstablishedCallback) {
         final ByteChannel byteChannel = createByteChannel(readableByteChannel, writableByteChannel);
-        executorService.submit(new Runnable()
-        {
+        executorService.submit(new Runnable() {
             @Override
-            public void run()
-            {
-                try
-                {
+            public void run() {
+                try {
                     socketEstablishedCallback.onSocketEstablished(new StubSocketChannel(byteChannel));
-                }
-                catch (RuntimeException e)
-                {
+                } catch (RuntimeException e) {
                     System.err.println("Exception thrown: ");
                     e.printStackTrace(System.err);
                 }
@@ -94,176 +79,145 @@ public class IntegrationSocketFactory implements SocketFactory
         });
     }
 
-    private ByteChannel createByteChannel(final ReadableByteChannel readableByteChannel, final WritableByteChannel writableByteChannel)
-    {
-        return new ByteChannel()
-        {
+    private ByteChannel createByteChannel(final ReadableByteChannel readableByteChannel, final WritableByteChannel writableByteChannel) {
+        return new ByteChannel() {
             @Override
-            public int read(final ByteBuffer dst) throws IOException
-            {
+            public int read(final ByteBuffer dst) throws IOException {
                 return readableByteChannel.read(dst);
             }
 
             @Override
-            public int write(final ByteBuffer src) throws IOException
-            {
+            public int write(final ByteBuffer src) throws IOException {
                 return writableByteChannel.write(src);
             }
 
             @Override
-            public boolean isOpen()
-            {
+            public boolean isOpen() {
                 return true;
             }
 
             @Override
-            public void close() throws IOException
-            {
+            public void close() throws IOException {
             }
         };
     }
 
 
-    private static class StubSocketChannel extends SocketChannel
-    {
+    private static class StubSocketChannel extends SocketChannel {
         private final ByteChannel byteChannel;
 
-        StubSocketChannel(final ByteChannel byteChannel)
-        {
+        StubSocketChannel(final ByteChannel byteChannel) {
             super(null);
             this.byteChannel = byteChannel;
         }
 
         @Override
-        public SocketChannel bind(SocketAddress local) throws IOException
-        {
+        public SocketChannel bind(SocketAddress local) throws IOException {
             return null;
         }
 
         @Override
-        public <T> SocketChannel setOption(SocketOption<T> name, T value) throws IOException
-        {
+        public <T> SocketChannel setOption(SocketOption<T> name, T value) throws IOException {
             return null;
         }
 
         @Override
-        public <T> T getOption(SocketOption<T> name) throws IOException
-        {
+        public <T> T getOption(SocketOption<T> name) throws IOException {
             return null;
         }
 
         @Override
-        public Set<SocketOption<?>> supportedOptions()
-        {
+        public Set<SocketOption<?>> supportedOptions() {
             return null;
         }
 
         @Override
-        public SocketChannel shutdownInput() throws IOException
-        {
+        public SocketChannel shutdownInput() throws IOException {
             return null;
         }
 
         @Override
-        public SocketChannel shutdownOutput() throws IOException
-        {
+        public SocketChannel shutdownOutput() throws IOException {
             return null;
         }
 
         @Override
-        public Socket socket()
-        {
+        public Socket socket() {
             return null;
         }
 
         @Override
-        public boolean isConnected()
-        {
+        public boolean isConnected() {
             return true;
         }
 
         @Override
-        public boolean isConnectionPending()
-        {
+        public boolean isConnectionPending() {
             return false;
         }
 
         @Override
-        public boolean connect(final SocketAddress remote) throws IOException
-        {
+        public boolean connect(final SocketAddress remote) throws IOException {
             return true;
         }
 
         @Override
-        public boolean finishConnect() throws IOException
-        {
+        public boolean finishConnect() throws IOException {
             return true;
         }
 
         @Override
-        public SocketAddress getRemoteAddress() throws IOException
-        {
+        public SocketAddress getRemoteAddress() throws IOException {
             return null;
         }
 
         @Override
-        public int read(final ByteBuffer dst) throws IOException
-        {
+        public int read(final ByteBuffer dst) throws IOException {
             return byteChannel.read(dst);
         }
 
         @Override
-        public long read(final ByteBuffer[] dsts, final int offset, final int length) throws IOException
-        {
+        public long read(final ByteBuffer[] dsts, final int offset, final int length) throws IOException {
             throw new UnsupportedOperationException("Not supported");
         }
 
         @Override
-        public int write(final ByteBuffer src) throws IOException
-        {
+        public int write(final ByteBuffer src) throws IOException {
             return byteChannel.write(src);
         }
 
         @Override
-        public long write(final ByteBuffer[] srcs, final int offset, final int length) throws IOException
-        {
+        public long write(final ByteBuffer[] srcs, final int offset, final int length) throws IOException {
             throw new UnsupportedOperationException("Not supported");
         }
 
         @Override
-        public SocketAddress getLocalAddress() throws IOException
-        {
+        public SocketAddress getLocalAddress() throws IOException {
             return null;
         }
 
         @Override
-        protected void implCloseSelectableChannel() throws IOException
-        {
+        protected void implCloseSelectableChannel() throws IOException {
         }
 
         @Override
-        protected void implConfigureBlocking(final boolean block) throws IOException
-        {
+        protected void implConfigureBlocking(final boolean block) throws IOException {
         }
     }
 
-    private class StubServerSocketChannel extends DelegatingServerSocketChannel
-    {
+    private class StubServerSocketChannel extends DelegatingServerSocketChannel {
 
-        StubServerSocketChannel()
-        {
+        StubServerSocketChannel() {
             super(null);
         }
 
         @Override
-        public SocketChannel accept() throws IOException
-        {
+        public SocketChannel accept() throws IOException {
             return new StubSocketChannel(createByteChannel(readableByteChannel, writableByteChannel));
         }
 
         @Override
-        public void close() throws IOException
-        {
+        public void close() throws IOException {
         }
 
     }

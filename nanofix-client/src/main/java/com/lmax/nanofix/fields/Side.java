@@ -16,22 +16,17 @@
 
 package com.lmax.nanofix.fields;
 
-public enum Side
-{
+public enum Side {
     Buy(1),
     Sell(2);
 
     private final int code;
 
-    Side(final int code)
-    {
+    Side(final int code) {
         this.code = code;
     }
 
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
-
-
 }

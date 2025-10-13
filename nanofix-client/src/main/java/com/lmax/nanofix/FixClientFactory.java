@@ -39,21 +39,17 @@ import com.lmax.nanofix.transport.TransportConfigImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class FixClientFactory
-{
+public final class FixClientFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(FixClientFactory.class);
 
-    static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler()
-    {
+    static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler() {
         @Override
-        public void uncaughtException(Thread thread, Throwable throwable)
-        {
+        public void uncaughtException(Thread thread, Throwable throwable) {
             LOGGER.error("Uncaught Exception thrown in thread: " + thread.getName(), throwable);
         }
     };
 
-    private FixClientFactory()
-    {
+    private FixClientFactory() {
     }
 
     /**
@@ -67,8 +63,7 @@ public final class FixClientFactory
      * @param host hostname of server to connect to.
      * @param port tcp port number int between 0 and 65535
      */
-    public static FixClient createFixClient(final String host, final int port)
-    {
+    public static FixClient createFixClient(final String host, final int port) {
         return createFixClient(new InetSocketAddress(host, port), new SystemConfig(false));
     }
 
@@ -77,8 +72,7 @@ public final class FixClientFactory
      *
      * @param port tcp port number int between 0 and 65535
      */
-    public static FixClient createFixClient(final int port)
-    {
+    public static FixClient createFixClient(final int port) {
         return createFixClient(new InetSocketAddress(port), new SystemConfig(false));
     }
 
@@ -89,13 +83,11 @@ public final class FixClientFactory
      * @param port         tcp port number int between 0 and 65535
      * @param systemConfig additional NanoFix configuration
      */
-    public static FixClient createFixClient(final String host, final int port, final SystemConfig systemConfig)
-    {
+    public static FixClient createFixClient(final String host, final int port, final SystemConfig systemConfig) {
         return createFixClient(new InetSocketAddress(host, port), systemConfig);
     }
 
-    public static FixClient createFixClient(final SocketFactory socketFactory)
-    {
+    public static FixClient createFixClient(final SocketFactory socketFactory) {
         final PublishingConnectionObserver publishingTransportObserver = new PublishingConnectionObserver();
         final TcpTransport transport = new TcpTransport(publishingTransportObserver, null, socketFactory, new TransportConfigImpl(false));
         publishingTransportObserver.addObserver(transport);
@@ -107,8 +99,7 @@ public final class FixClientFactory
      *
      * @param fixClientConfiguration Contains configuration that determines the type of {@link FixClient}
      */
-    public static FixClient createFixClient(final FixClientConfiguration fixClientConfiguration)
-    {
+    public static FixClient createFixClient(final FixClientConfiguration fixClientConfiguration) {
         final InetSocketAddress socketAddress = fixClientConfiguration.getSocketAddress();
         final SocketFactory socketFactory = fixClientConfiguration.getSocketFactory();
         final SystemConfig systemConfig = fixClientConfiguration.getSystemConfig();
@@ -120,8 +111,7 @@ public final class FixClientFactory
         return buildFixClient(transport, publishingTransportObserver, maxMessageSize);
     }
 
-    private static FixClient createFixClient(final InetSocketAddress socketAddress, final SystemConfig systemConfig)
-    {
+    private static FixClient createFixClient(final InetSocketAddress socketAddress, final SystemConfig systemConfig) {
         final PublishingConnectionObserver publishingTransportObserver = new PublishingConnectionObserver();
 
         final ExecutorService executorService = Executors.newSingleThreadExecutor(new NamedThreadFactory("InboundConnection", true, UNCAUGHT_EXCEPTION_HANDLER));
@@ -131,8 +121,7 @@ public final class FixClientFactory
         return buildFixClient(transport, publishingTransportObserver, MAX_MESSAGE_SIZE);
     }
 
-    private static FixClient buildFixClient(final Transport transport, final PublishingConnectionObserver publishingTransportObserver, final int maxMessageSize)
-    {
+    private static FixClient buildFixClient(final Transport transport, final PublishingConnectionObserver publishingTransportObserver, final int maxMessageSize) {
         final FixStreamMessageParser fixStreamMessageParser = new FixStreamMessageParser(maxMessageSize);
         final ThreadBlocker messageConsumingThreadBlocker = new ThreadBlocker();
         final FixMessagePublisher fixMessagePublisher = new FixMessagePublisher();

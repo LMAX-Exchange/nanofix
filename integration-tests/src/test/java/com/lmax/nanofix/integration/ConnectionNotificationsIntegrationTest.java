@@ -34,15 +34,13 @@ import com.lmax.nanofix.integration.fixture.SignallingConnectionObserver;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ConnectionNotificationsIntegrationTest
-{
+public class ConnectionNotificationsIntegrationTest {
     private ReadableByteChannel readableByteChannel;
     private WritableByteChannel writableByteChannel;
     private ByteArrayOutputStream byteArrayOutputStream;
 
     @Test
-    public void shouldNotifyOnConnectionEstablished() throws Exception
-    {
+    public void shouldNotifyOnConnectionEstablished() throws Exception {
         FixClient fixClient;
         final Lock lock = new ReentrantLock();
 
@@ -55,23 +53,19 @@ public class ConnectionNotificationsIntegrationTest
         fixClient = FixClientFactory.createFixClient(new IntegrationSocketFactory(readableByteChannel, writableByteChannel));
         fixClient.registerTransportObserver(new SignallingConnectionObserver(lock, connectionEstablishedCondition, connectionClosedCondition));
 
-        try
-        {
+        try {
             //when
             lock.lock();
             fixClient.connect();
             final boolean connectionEstablished = connectionEstablishedCondition.await(5, TimeUnit.SECONDS);
             Assert.assertTrue(connectionEstablished);
-        }
-        finally
-        {
+        } finally {
             lock.unlock();
         }
     }
 
     @Test
-    public void shouldNotifyOnConnectionClosed() throws Exception
-    {
+    public void shouldNotifyOnConnectionClosed() throws Exception {
         FixClient fixClient;
         final Lock lock = new ReentrantLock();
 
@@ -84,18 +78,14 @@ public class ConnectionNotificationsIntegrationTest
         fixClient = FixClientFactory.createFixClient(new IntegrationSocketFactory(readableByteChannel, writableByteChannel));
         fixClient.registerTransportObserver(new SignallingConnectionObserver(lock, connectionEstablishedCondition, connectionClosedCondition));
 
-        try
-        {
+        try {
             //when
             lock.lock();
             fixClient.connect();
             final boolean connectionClosed = connectionClosedCondition.await(5, TimeUnit.SECONDS);
             Assert.assertTrue(connectionClosed);
-        }
-        finally
-        {
+        } finally {
             lock.unlock();
         }
     }
-
 }

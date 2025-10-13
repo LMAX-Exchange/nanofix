@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.fields;
 
-public enum BusinessRejectionReason
-{
+public enum BusinessRejectionReason {
     Other(0),
     UnknownId(1),
     UnknownSecurity(2),
@@ -27,13 +26,11 @@ public enum BusinessRejectionReason
 
     private final int code;
 
-    BusinessRejectionReason(final int code)
-    {
+    BusinessRejectionReason(final int code) {
         this.code = code;
     }
 
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 }

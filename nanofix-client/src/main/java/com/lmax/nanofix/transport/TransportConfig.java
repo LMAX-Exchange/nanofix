@@ -16,7 +16,6 @@
 
 package com.lmax.nanofix.transport;
 
-public interface TransportConfig
-{
+public interface TransportConfig {
     boolean shouldStayListening();
 }

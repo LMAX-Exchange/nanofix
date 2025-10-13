@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.transport;
 
-public interface TransportOperations
-{
+public interface TransportOperations {
     void connect();
 
     void listen();

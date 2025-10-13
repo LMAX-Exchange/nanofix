@@ -29,16 +29,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 
-public class TcpTransportTest
-{
+public class TcpTransportTest {
     private final PublishingConnectionObserver publishingTransportObserver = mock(PublishingConnectionObserver.class);
     private final SocketFactory socketFactory = mock(SocketFactory.class);
     private final DelegatingServerSocketChannel serverSocketChannel = mock(DelegatingServerSocketChannel.class);
     private final InetSocketAddress socketAddress = new InetSocketAddress("host", 222);
 
     @Test
-    public void shouldBindToSocketOnListen()
-    {
+    public void shouldBindToSocketOnListen() {
         given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
 
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
@@ -48,8 +46,7 @@ public class TcpTransportTest
     }
 
     @Test
-    public void shouldRemoveBindOnWhenTheConnectionClosesByDefault() throws Exception
-    {
+    public void shouldRemoveBindOnWhenTheConnectionClosesByDefault() throws Exception {
         given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
 
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
@@ -61,8 +58,7 @@ public class TcpTransportTest
     }
 
     @Test
-    public void shouldStayBoundOnWhenTheConnectionClosesIfConfiguredToMaintainBind() throws Exception
-    {
+    public void shouldStayBoundOnWhenTheConnectionClosesIfConfiguredToMaintainBind() throws Exception {
         given(socketFactory.bind(socketAddress)).willReturn(serverSocketChannel);
 
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(true));
@@ -74,8 +70,7 @@ public class TcpTransportTest
     }
 
     @Test
-    public void shouldCreateAnOutboundSocketWhenConnecting()
-    {
+    public void shouldCreateAnOutboundSocketWhenConnecting() {
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(false));
         tcpTransport.connect();
 
@@ -83,8 +78,7 @@ public class TcpTransportTest
     }
 
     @Test
-    public void shouldNotAcceptTryAcceptNewConnectionsWhenInitiatingOutboundConnections()
-    {
+    public void shouldNotAcceptTryAcceptNewConnectionsWhenInitiatingOutboundConnections() {
         final TcpTransport tcpTransport = new TcpTransport(publishingTransportObserver, socketAddress, socketFactory, new TransportConfigImpl(true));
         tcpTransport.connect();
         tcpTransport.connectionClosed();

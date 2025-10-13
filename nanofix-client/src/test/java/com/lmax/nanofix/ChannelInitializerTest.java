@@ -34,8 +34,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ChannelInitializerTest
-{
+public class ChannelInitializerTest {
     private final Transport transport = mock(Transport.class);
     private final ByteChannelReader byteChannelReader = mock(ByteChannelReader.class);
     private final OutboundMessageHandler outboundMessageHandler = mock(OutboundMessageHandler.class);
@@ -43,14 +42,12 @@ public class ChannelInitializerTest
     private final ReadableByteChannel readableByteChannel = mock(ReadableByteChannel.class);
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         Mockito.ignoreStubs(writableByteChannel);
     }
 
     @Test
-    public void shouldStartByteChannelReaderOnConnectionEstablished()
-    {
+    public void shouldStartByteChannelReaderOnConnectionEstablished() {
         given(transport.getWritableByteChannel()).willReturn(writableByteChannel);
         given(transport.getReadableByteChannel()).willReturn(readableByteChannel);
 
@@ -63,28 +60,23 @@ public class ChannelInitializerTest
         verify(byteChannelReader).blockingStart(readableByteChannel);
     }
 
-    private static class DeterministicExecutor implements Executor
-    {
+    private static class DeterministicExecutor implements Executor {
         private List<Runnable> commands = new ArrayList<>();
 
-        DeterministicExecutor()
-        {
+        DeterministicExecutor() {
             super();
         }
 
-        public void runPendingCommands()
-        {
+        public void runPendingCommands() {
             final List<Runnable> commandsToRun = commands;
             commands = new ArrayList<>();
 
-            for (Runnable command : commandsToRun)
-            {
+            for (Runnable command : commandsToRun) {
                 command.run();
             }
         }
 
-        public void execute(final Runnable command)
-        {
+        public void execute(final Runnable command) {
             commands.add(command);
         }
     }

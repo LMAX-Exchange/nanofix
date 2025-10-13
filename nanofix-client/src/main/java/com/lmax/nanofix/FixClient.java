@@ -29,8 +29,7 @@ import com.lmax.nanofix.transport.TransportOperations;
 /**
  * The main class used to interact with the fix client.
  */
-public class FixClient
-{
+public class FixClient {
     private final FixMessagePublisher fixMessagePublisher;
     private final ChannelInitializer channelInitializer;
     private final TransportOperations transportOps;
@@ -38,8 +37,7 @@ public class FixClient
     private final ThreadBlocker messageConsumingThreadBlocker;
 
     FixClient(final FixMessagePublisher fixMessagePublisher, final ChannelInitializer channelInitializer, final TransportOperations transportOps,
-                     final FixSession fixSession, final ThreadBlocker messageConsumingThreadBlocker)
-    {
+              final FixSession fixSession, final ThreadBlocker messageConsumingThreadBlocker) {
         this.fixMessagePublisher = fixMessagePublisher;
         this.channelInitializer = channelInitializer;
         this.transportOps = transportOps;
@@ -52,8 +50,7 @@ public class FixClient
      *
      * @param messages a collection of messages.
      */
-    public void send(final Collection<FixMessage> messages)
-    {
+    public void send(final Collection<FixMessage> messages) {
         fixSession.send(messages);
     }
 
@@ -62,8 +59,7 @@ public class FixClient
      *
      * @param message a FIX messages.
      */
-    public void send(final FixMessage message)
-    {
+    public void send(final FixMessage message) {
         fixSession.send(message);
     }
 
@@ -72,8 +68,7 @@ public class FixClient
      *
      * @param message a FIX messages.
      */
-    public void send(final String message)
-    {
+    public void send(final String message) {
         fixSession.send(message);
     }
 
@@ -82,23 +77,18 @@ public class FixClient
      *
      * @param bytes a FIX messages.
      */
-    public void send(final byte[] bytes)
-    {
+    public void send(final byte[] bytes) {
         fixSession.send(bytes);
     }
 
     /**
      * Initiates a TCP connection with the remote host specified on construction..
      */
-    public void connect()
-    {
+    public void connect() {
         transportOps.connect();
-        try
-        {
+        try {
             channelInitializer.awaitConnection();
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while waiting for channel initialization");
         }
     }
@@ -109,15 +99,11 @@ public class FixClient
      * @param timeout the time to wait for a connection to be established
      * @param units   the {@link TimeUnit unit} of the timeout
      */
-    public boolean connect(final long timeout, final TimeUnit units)
-    {
+    public boolean connect(final long timeout, final TimeUnit units) {
         transportOps.connect();
-        try
-        {
+        try {
             return channelInitializer.awaitConnection(timeout, units);
-        }
-        catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while waiting for channel initialization");
         }
     }
@@ -125,48 +111,42 @@ public class FixClient
     /**
      * Waits for an inbound TCP connection on the interface and port specified on construction.
      */
-    public void listen()
-    {
+    public void listen() {
         transportOps.listen();
     }
 
     /**
      * Stops listening on the TCP socket.
      */
-    public void stopListening()
-    {
+    public void stopListening() {
         transportOps.stopListening();
     }
 
     /**
      * Terminates the TCP connection with a TCP ( RST, ACK).
      */
-    public void killSocket()
-    {
+    public void killSocket() {
         transportOps.killSocket();
     }
 
     /**
      * Attempts to gracefully close the TCP socket.
      */
-    public void close()
-    {
+    public void close() {
         transportOps.close();
     }
 
     /**
      * Checks if the transport is connected.
      */
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return transportOps.isConnected();
     }
 
     /**
      * Blocks until a connection is established.
      */
-    public void awaitConnection() throws InterruptedException
-    {
+    public void awaitConnection() throws InterruptedException {
         channelInitializer.awaitConnection();
     }
 
@@ -175,8 +155,7 @@ public class FixClient
      *
      * @param connectionObserver receives connection events.
      */
-    public void registerTransportObserver(ConnectionObserver connectionObserver)
-    {
+    public void registerTransportObserver(ConnectionObserver connectionObserver) {
         transportOps.registerTransportObserver(connectionObserver);
     }
 
@@ -185,34 +164,28 @@ public class FixClient
      *
      * @param connectionObserver receives connection events.
      */
-    public void unregisterTransportObserver(ConnectionObserver connectionObserver)
-    {
+    public void unregisterTransportObserver(ConnectionObserver connectionObserver) {
         transportOps.unregisterTransportObserver(connectionObserver);
     }
 
     /**
      * Subscribe to all inbound messages.
      */
-    public void subscribeToAllMessages(final FixMessageHandler fixMessageHandler)
-    {
+    public void subscribeToAllMessages(final FixMessageHandler fixMessageHandler) {
         fixMessagePublisher.subscribeToAllMessages(fixMessageHandler);
     }
 
     /**
      * Stop reading messages from the transport's byte channel
      */
-    public void pauseMessageConsumer()
-    {
+    public void pauseMessageConsumer() {
         messageConsumingThreadBlocker.pause();
     }
 
     /**
      * Resume reading messages from the transport's byte channel
      */
-    public void resumeMessageConsumer()
-    {
+    public void resumeMessageConsumer() {
         messageConsumingThreadBlocker.resume();
     }
-
-
 }

@@ -16,20 +16,17 @@
 
 package com.lmax.nanofix.fields;
 
-public enum OrdType
-{
+public enum OrdType {
     Market(1),
     Limit(2);
 
     private final int code;
 
-    OrdType(final int code)
-    {
+    OrdType(final int code) {
         this.code = code;
     }
 
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 }

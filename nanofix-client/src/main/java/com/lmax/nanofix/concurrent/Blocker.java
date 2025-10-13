@@ -16,7 +16,6 @@
 
 package com.lmax.nanofix.concurrent;
 
-public interface Blocker
-{
+public interface Blocker {
     void mayWait();
 }

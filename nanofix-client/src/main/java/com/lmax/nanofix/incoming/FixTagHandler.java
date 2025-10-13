@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.incoming;
 
-public interface FixTagHandler
-{
+public interface FixTagHandler {
     void messageStart();
 
     void onTag(int tagIdentity, byte[] message, int tagValueOffset, int tagValueLength);

@@ -1,8 +1,5 @@
 package com.lmax.nanofix.incoming;
 
-
-interface MessageParserCallbackTestFactory
-{
+interface MessageParserCallbackTestFactory {
     void onMessage(byte[] buffer, int offset, int length);
-
 }

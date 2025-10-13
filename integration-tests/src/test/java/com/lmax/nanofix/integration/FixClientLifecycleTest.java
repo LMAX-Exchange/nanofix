@@ -31,11 +31,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
-public class FixClientLifecycleTest
-{
+public class FixClientLifecycleTest {
     @Test
-    public void shouldBeAbleToStartListeningAgainAfterFirstStartingAndThenStopping() throws InterruptedException
-    {
+    public void shouldBeAbleToStartListeningAgainAfterFirstStartingAndThenStopping() throws InterruptedException {
         Lock lock = new ReentrantLock();
         final Condition connectionClosedCondition = lock.newCondition();
         final Condition connectionEstablishedCondition = lock.newCondition();
@@ -46,8 +44,7 @@ public class FixClientLifecycleTest
 
         fixClient.listen();
 
-        try
-        {
+        try {
             lock.lock();
             final FixClient fixClient2 = FixClientFactory.createFixClient("localhost", 9990);
             fixClient2.connect();
@@ -57,16 +54,13 @@ public class FixClientLifecycleTest
             final boolean connectionClosed = connectionClosedCondition.await(5, TimeUnit.SECONDS);
             Assert.assertTrue(connectionClosed);
             fixClient.listen();
-        }
-        finally
-        {
+        } finally {
             lock.unlock();
         }
     }
 
     @Test
-    public void shouldBeSafeToCloseAFixClientWhichHasNotLoggedOn()
-    {
+    public void shouldBeSafeToCloseAFixClientWhichHasNotLoggedOn() {
         // Passes by merit of not throwing an exception
 
         final FixClient fixClient = FixClientFactory.createFixClient(new IntegrationSocketFactory(null, null));
@@ -74,8 +68,7 @@ public class FixClientLifecycleTest
     }
 
     @Test
-    public void shouldReportAnUnconnectedFixClientAsNotConnected()
-    {
+    public void shouldReportAnUnconnectedFixClientAsNotConnected() {
         final FixClient fixClient = FixClientFactory.createFixClient(new IntegrationSocketFactory(null, null));
         assertFalse(fixClient.isConnected());
     }

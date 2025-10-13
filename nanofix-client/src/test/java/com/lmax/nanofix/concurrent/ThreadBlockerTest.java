@@ -25,22 +25,17 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 
-public class ThreadBlockerTest
-{
+public class ThreadBlockerTest {
 
     private volatile boolean running = true;
 
     @Test
-    public void threadShouldSwitchBetweenWaitingAndRunningStatesWhenRequested() throws InterruptedException
-    {
+    public void threadShouldSwitchBetweenWaitingAndRunningStatesWhenRequested() throws InterruptedException {
         final ThreadBlocker threadBlocker = new ThreadBlocker();
-        final Thread thread = new Thread(new Runnable()
-        {
+        final Thread thread = new Thread(new Runnable() {
             @Override
-            public void run()
-            {
-                while (running)
-                {
+            public void run() {
+                while (running) {
                     threadBlocker.mayWait();
                 }
             }
@@ -61,18 +56,13 @@ public class ThreadBlockerTest
 
     }
 
-    private void waitForThreadState(final Thread thread, final Thread.State expectedState, final int timeoutMillis)
-    {
+    private void waitForThreadState(final Thread thread, final Thread.State expectedState, final int timeoutMillis) {
         final int numberOfRetries = 10;
         final int waitBetweenRetries = timeoutMillis / 10;
-        for (int i = 0; i < numberOfRetries; i++)
-        {
-            if (thread.getState() == expectedState)
-            {
+        for (int i = 0; i < numberOfRetries; i++) {
+            if (thread.getState() == expectedState) {
                 return;
-            }
-            else
-            {
+            } else {
                 LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(waitBetweenRetries));
             }
         }

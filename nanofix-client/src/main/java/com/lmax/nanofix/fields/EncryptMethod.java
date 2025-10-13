@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.fields;
 
-public enum EncryptMethod
-{
+public enum EncryptMethod {
     NONE(0),
     PKCS(1),
     DES(2),
@@ -28,13 +27,11 @@ public enum EncryptMethod
 
     private final int code;
 
-    EncryptMethod(final int code)
-    {
+    EncryptMethod(final int code) {
         this.code = code;
     }
 
-    public String getCode()
-    {
+    public String getCode() {
         return Integer.toString(code);
     }
 }

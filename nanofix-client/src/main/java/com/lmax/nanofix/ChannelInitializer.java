@@ -30,8 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-class ChannelInitializer implements ConnectionObserver
-{
+class ChannelInitializer implements ConnectionObserver {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChannelInitializer.class);
     private final Transport transport;
     private final ByteChannelReader inputStreamReader;
@@ -41,8 +40,7 @@ class ChannelInitializer implements ConnectionObserver
     private volatile CountDownLatch countDownLatch = new CountDownLatch(1);
 
 
-    ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService)
-    {
+    ChannelInitializer(final Transport transport, final ByteChannelReader inputStreamReader, final OutboundMessageHandler outboundMessageSender, Executor channelReaderExecutorService) {
         this.channelReaderExecutorService = channelReaderExecutorService;
         this.transport = transport;
         this.inputStreamReader = inputStreamReader;
@@ -50,21 +48,15 @@ class ChannelInitializer implements ConnectionObserver
     }
 
     @Override
-    public void connectionEstablished()
-    {
+    public void connectionEstablished() {
         outboundMessageSender.initialiseOutboundChannel(transport.getWritableByteChannel());
-        channelReaderExecutorService.execute(new Runnable()
-        {
+        channelReaderExecutorService.execute(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 final ReadableByteChannel readableByteChannel = transport.getReadableByteChannel();
-                try
-                {
+                try {
                     inputStreamReader.blockingStart(readableByteChannel);
-                }
-                catch (RuntimeException e)
-                {
+                } catch (RuntimeException e) {
                     LOGGER.error("Exception thrown while reading from stream, channel: " + readableByteChannel, e);
                 }
             }
@@ -72,19 +64,16 @@ class ChannelInitializer implements ConnectionObserver
         countDownLatch.countDown();
     }
 
-    public void awaitConnection() throws InterruptedException
-    {
+    public void awaitConnection() throws InterruptedException {
         countDownLatch.await();
     }
 
-    public boolean awaitConnection(final long timeout, final TimeUnit units) throws InterruptedException
-    {
+    public boolean awaitConnection(final long timeout, final TimeUnit units) throws InterruptedException {
         return countDownLatch.await(timeout, units);
     }
 
     @Override
-    public void connectionClosed()
-    {
+    public void connectionClosed() {
         countDownLatch.countDown();
         countDownLatch = new CountDownLatch(1);
     }

@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.fields;
 
-public enum SessionRejectReason
-{
+public enum SessionRejectReason {
     InvalidTagNumber(0),
     RequiredTagMissing(1),
     TagNotDefinedForThisMessageType(2),
@@ -33,13 +32,11 @@ public enum SessionRejectReason
 
     private final int code;
 
-    SessionRejectReason(final int code)
-    {
+    SessionRejectReason(final int code) {
         this.code = code;
     }
 
-    public int getCode()
-    {
+    public int getCode() {
         return code;
     }
 }

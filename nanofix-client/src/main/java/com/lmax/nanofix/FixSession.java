@@ -22,34 +22,28 @@ import java.util.Collection;
 import com.lmax.nanofix.outgoing.FixMessage;
 import com.lmax.nanofix.outgoing.OutboundMessageHandler;
 
-public class FixSession
-{
+public class FixSession {
     private int outboundSequenceNumber;
     private OutboundMessageHandler outboundMessageSender;
 
-    public FixSession(final OutboundMessageHandler outboundMessageSender)
-    {
+    public FixSession(final OutboundMessageHandler outboundMessageSender) {
         this.outboundMessageSender = outboundMessageSender;
         this.outboundSequenceNumber = 1;
     }
 
-    public void send(final Collection<FixMessage> messages)
-    {
+    public void send(final Collection<FixMessage> messages) {
         outboundMessageSender.send(messages);
     }
 
-    public void send(final FixMessage message)
-    {
+    public void send(final FixMessage message) {
         outboundMessageSender.send(message);
     }
 
-    public void send(final String message)
-    {
+    public void send(final String message) {
         outboundMessageSender.send(message);
     }
 
-    public void send(final byte[] bytes)
-    {
+    public void send(final byte[] bytes) {
         outboundMessageSender.sendBytes(bytes);
     }
 }

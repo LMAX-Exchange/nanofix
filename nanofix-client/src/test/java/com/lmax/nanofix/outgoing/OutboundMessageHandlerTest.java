@@ -44,22 +44,19 @@ import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER;
 
-public class OutboundMessageHandlerTest
-{
+public class OutboundMessageHandlerTest {
     private final WritableByteChannel writableByteChannel = mock(WritableByteChannel.class);
     private final ConnectionObserver connectionObserver = mock(ConnectionObserver.class);
     private final OutboundMessageHandler handler = new OutboundMessageHandler(connectionObserver);
 
 
     @Before
-    public void setUp()
-    {
+    public void setUp() {
         handler.initialiseOutboundChannel(writableByteChannel);
     }
 
     @Test
-    public void shouldPlaceMultipleMessagesInSameBuffer() throws Exception
-    {
+    public void shouldPlaceMultipleMessagesInSameBuffer() throws Exception {
         final ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDateTime.parse("19981231-23:58:59.000", DATE_TIME_FORMATTER), ZoneOffset.UTC);
         final FixMessage loginMessage = new FixMessageBuilder().messageType(MsgType.LOGIN).msgSeqNum(1).senderCompID("username").targetCompID("LMXBL")
                 .sendingTime(zonedDateTime).username("username").password("password").heartBtInt(100000).encryptMethod(EncryptMethod.NONE).build();
@@ -73,62 +70,46 @@ public class OutboundMessageHandlerTest
     }
 
     @Test(expected = TransportClosedException.class)
-    public void shouldNotifyTransportObserverIfAClosedChannelExceptionIsThrownWhileWriting() throws Exception
-    {
+    public void shouldNotifyTransportObserverIfAClosedChannelExceptionIsThrownWhileWriting() throws Exception {
         given(writableByteChannel.write(any(ByteBuffer.class))).willThrow(new ClosedChannelException());
 
-        try
-        {
+        try {
             handler.send(new FixMessageBuilder().build());
-        }
-        finally
-        {
+        } finally {
             verify(connectionObserver).connectionClosed();
         }
     }
 
     @Test(expected = TransportClosedException.class)
-    public void shouldNotifyTransportObserverIfAnClosedChannelExceptionIsThrownWhileWritingACollection() throws Exception
-    {
+    public void shouldNotifyTransportObserverIfAnClosedChannelExceptionIsThrownWhileWritingACollection() throws Exception {
         given(writableByteChannel.write(any(ByteBuffer.class))).willThrow(new ClosedChannelException());
 
-        try
-        {
+        try {
             handler.send(Collections.singletonList(new FixMessageBuilder().build()));
-        }
-        finally
-        {
+        } finally {
             verify(connectionObserver).connectionClosed();
         }
     }
 
     @Test(expected = TransportClosedException.class)
-    public void shouldNotifyTransportObserverWhenAnIOExceptionIsThrownAndCloseTheTransportWhileWritingACollection() throws Exception
-    {
+    public void shouldNotifyTransportObserverWhenAnIOExceptionIsThrownAndCloseTheTransportWhileWritingACollection() throws Exception {
         given(writableByteChannel.write(any(ByteBuffer.class))).willThrow(new IOException("Broken pipe"));
 
-        try
-        {
+        try {
             handler.send(Collections.singletonList(new FixMessageBuilder().build()));
-        }
-        finally
-        {
+        } finally {
             verify(connectionObserver).connectionClosed();
             verify(writableByteChannel).close();
         }
     }
 
     @Test(expected = TransportClosedException.class)
-    public void shouldNotifyTransportObserverWhenAnIOExceptionIsThrownAndCloseTheTransportWhileWriting() throws Exception
-    {
+    public void shouldNotifyTransportObserverWhenAnIOExceptionIsThrownAndCloseTheTransportWhileWriting() throws Exception {
         given(writableByteChannel.write(any(ByteBuffer.class))).willThrow(new IOException("Broken pipe"));
 
-        try
-        {
+        try {
             handler.send(new FixMessageBuilder().build());
-        }
-        finally
-        {
+        } finally {
             verify(connectionObserver).connectionClosed();
             verify(writableByteChannel).close();
         }

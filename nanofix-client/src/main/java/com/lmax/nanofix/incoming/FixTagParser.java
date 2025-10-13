@@ -19,50 +19,40 @@ package com.lmax.nanofix.incoming;
 import com.lmax.nanofix.FixUtil;
 import com.lmax.nanofix.byteoperations.ByteUtil;
 
-public final class FixTagParser
-{
+public final class FixTagParser {
     public static final byte SOH = 1;
     private static final byte ASCII_EQUALS = (byte)61;
 
     private final FixTagHandler fixTagHandler;
     private final byte[] lineSeparators;
 
-    public FixTagParser(final FixTagHandler fixTagHandler)
-    {
+    public FixTagParser(final FixTagHandler fixTagHandler) {
         this.fixTagHandler = fixTagHandler;
         lineSeparators = new byte[1];
         lineSeparators[0] = SOH;
     }
 
-    public FixTagParser(final FixTagHandler fixTagHandler, final byte[] lineSeparators)
-    {
+    public FixTagParser(final FixTagHandler fixTagHandler, final byte[] lineSeparators) {
         this.fixTagHandler = fixTagHandler;
         this.lineSeparators = lineSeparators;
     }
 
-    public boolean parse(final byte[] message, final int offset, final int length, final boolean throwExceptionOnParseFailure)
-    {
+    public boolean parse(final byte[] message, final int offset, final int length, final boolean throwExceptionOnParseFailure) {
         fixTagHandler.messageStart();
 
         int tagStart = offset;
         int equalsIndex = -1;
 
-        for (int i = 0; i < length; i++)
-        {
+        for (int i = 0; i < length; i++) {
             int index = i + offset;
-            if (-1 == equalsIndex && ASCII_EQUALS == message[index])
-            {
+            if (-1 == equalsIndex && ASCII_EQUALS == message[index]) {
                 equalsIndex = index;
             }
 
-            if (isLineSeparator(message[index]))
-            {
-                if (-1 != equalsIndex)
-                {
-                    if (!ByteUtil.isInteger(message, tagStart, equalsIndex - tagStart))
-                    {
-                        if (throwExceptionOnParseFailure)
-                        {
+            if (isLineSeparator(message[index])) {
+                if (-1 != equalsIndex) {
+                    if (!ByteUtil.isInteger(message, tagStart, equalsIndex - tagStart)) {
+                        if (throwExceptionOnParseFailure) {
                             raiseException("Invalid tag id", message, offset, length, tagStart, equalsIndex);
                         }
                         return false;
@@ -75,8 +65,7 @@ public final class FixTagParser
 
                     fixTagHandler.onTag(tagIdentity, message, tagValueOffset, tagValueLength);
 
-                    if (fixTagHandler.isFinished())
-                    {
+                    if (fixTagHandler.isFinished()) {
                         break;
                     }
                 }
@@ -91,12 +80,9 @@ public final class FixTagParser
         return true;
     }
 
-    private boolean isLineSeparator(final byte charByte)
-    {
-        for (final byte lineSeparator : lineSeparators)
-        {
-            if (lineSeparator == charByte)
-            {
+    private boolean isLineSeparator(final byte charByte) {
+        for (final byte lineSeparator : lineSeparators) {
+            if (lineSeparator == charByte) {
                 return true;
             }
         }
@@ -108,8 +94,7 @@ public final class FixTagParser
                                        final int offset,
                                        final int length,
                                        final int tagStart,
-                                       final int equalsIndex)
-    {
+                                       final int equalsIndex) {
         String msg = String.format("Parse Failed: %s at tagStart=%d equalsIndex=%d message=%s",
                                    reason,
                                    Integer.valueOf(tagStart),

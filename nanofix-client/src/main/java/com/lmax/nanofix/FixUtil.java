@@ -23,27 +23,22 @@ import java.time.format.DateTimeFormatter;
 
 import com.lmax.nanofix.incoming.FixTagParser;
 
-public final class FixUtil
-{
+public final class FixUtil {
     public static final Charset ASCII_CHARSET;
 
-    static
-    {
-            ASCII_CHARSET = StandardCharsets.US_ASCII;
+    static {
+        ASCII_CHARSET = StandardCharsets.US_ASCII;
     }
 
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss.SSS").withZone(ZoneOffset.UTC);
 
-    public static Charset getCharset()
-    {
+    public static Charset getCharset() {
         return ASCII_CHARSET;
     }
 
-    public static byte[] newMessage(String...tags)
-    {
+    public static byte[] newMessage(String... tags) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0, n = tags.length; i < n; i++)
-        {
+        for (int i = 0, n = tags.length; i < n; i++) {
             sb.append(tags[i]);
             sb.append(FixTagParser.SOH);
         }

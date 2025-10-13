@@ -19,23 +19,19 @@ package com.lmax.nanofix.outgoing;
 import javax.annotation.concurrent.Immutable;
 
 @Immutable
-public class FixMessage
-{
+public class FixMessage {
     private final String messageWithChecksum;
 
-    FixMessage(final String messageWithChecksum)
-    {
+    FixMessage(final String messageWithChecksum) {
         this.messageWithChecksum = messageWithChecksum;
     }
 
-    public String toFixString()
-    {
+    public String toFixString() {
         return messageWithChecksum;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append("FixMessage");
         sb.append("{messageWithChecksum='").append(messageWithChecksum).append('\'');

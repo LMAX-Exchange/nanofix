@@ -21,8 +21,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class FixStreamMessageParserPermutationsTest
-{
+public class FixStreamMessageParserPermutationsTest {
 
     private static final int MAX_MESSAGE_SIZE = 2048;
 
@@ -50,50 +49,43 @@ public class FixStreamMessageParserPermutationsTest
     private static final byte[] ALL_MESSAGE_BYTES = Bytes.concat(MESSAGE_1, MESSAGE_2, MESSAGE_3, MESSAGE_4, MESSAGE_5, MESSAGE_6, MESSAGE_7, MESSAGE_8);
 
     @Test
-    public void parseAllMessagesWithRandomSegmentLengths()
-    {
+    public void parseAllMessagesWithRandomSegmentLengths() {
         final ByteBuffer bb = ByteBuffer.wrap(ALL_MESSAGE_BYTES);
 
         final int iterations = 1000;
 
-        for (int i = 0; i < iterations; i++)
-        {
+        for (int i = 0; i < iterations; i++) {
             performIteration(bb, ALL_MESSAGES, new RandomBytesConsumer(1, 32));
         }
     }
 
     @Test
-    public void parseMessagesOneByteAtATime()
-    {
+    public void parseMessagesOneByteAtATime() {
         final ByteBuffer bb = ByteBuffer.wrap(ALL_MESSAGE_BYTES);
 
         performIteration(bb, ALL_MESSAGES, new RandomBytesConsumer(1, 1));
     }
 
     @Test
-    public void parseMessagesThreeBytesAtATime()
-    {
+    public void parseMessagesThreeBytesAtATime() {
         final ByteBuffer bb = ByteBuffer.wrap(ALL_MESSAGE_BYTES);
 
         performIteration(bb, ALL_MESSAGES, new RandomBytesConsumer(3, 3));
     }
 
     @Test
-    public void parseMessagesWithRandomEmptySegments()
-    {
+    public void parseMessagesWithRandomEmptySegments() {
         final ByteBuffer bb = ByteBuffer.wrap(ALL_MESSAGE_BYTES);
 
         final int iterations = 1000;
 
-        for (int i = 0; i < iterations; i++)
-        {
+        for (int i = 0; i < iterations; i++) {
             performIteration(bb, ALL_MESSAGES, new RandomBytesConsumer(0, 8));
         }
     }
 
     @Test
-    public void messageBoundaryConditions() throws Exception
-    {
+    public void messageBoundaryConditions() throws Exception {
         final byte[] msgBytes = Bytes.concat(MESSAGE_1, MESSAGE_2, MESSAGE_3);
         final ByteBuffer bb = ByteBuffer.wrap(msgBytes);
         final List<byte[]> messages = asList(MESSAGE_1, MESSAGE_2, MESSAGE_3);
@@ -104,37 +96,27 @@ public class FixStreamMessageParserPermutationsTest
         final int offsetOfSecondMessageChecksum = wholeString.indexOf("|10=", offsetOfFirstMessageChecksum + 1);
         final int offsetOfLastMessageChecksum = wholeString.indexOf("|10=", offsetOfSecondMessageChecksum + 1);
 
-        for (int i = 1; i <= 6; i++) // possible fragmentations of "8=FIX." prefix of message 1
-        {
-            for (int j = 1; j <= 15; j++) // possible fragmentations of "|10=067|8=FIX." block between messages 1 and 2
-            {
-                for (int k = 1; k <= 15; k++) // possible fragmentations of "|10=067|8=FIX." block between messages 2 and 3
-                {
-                    for (int l = 1; l <= 9; l++) // possible fragmentations of "|10=067|" suffix of message 3
-                    {
+        for (int i = 1; i <= 6; i++) {  // possible fragmentations of "8=FIX." prefix of message 1
+            for (int j = 1; j <= 15; j++) {  // possible fragmentations of "|10=067|8=FIX." block between messages 1 and 2
+                for (int k = 1; k <= 15; k++) {  // possible fragmentations of "|10=067|8=FIX." block between messages 2 and 3
+                    for (int l = 1; l <= 9; l++) {  // possible fragmentations of "|10=067|" suffix of message 3
                         final int consumeFromStart = i;
                         final int consumeFromBoundaryMsg1Msg2 = j;
                         final int consumeFromBoundaryMsg2Msg3 = k;
                         final int consumeFromMsg3Checksum = l;
-                        performIteration(bb, messages, new BytesToConsumeCalculator()
-                        {
+                        performIteration(bb, messages, new BytesToConsumeCalculator() {
                             @Override
-                            public int getBytesToConsume(final int fromPosition)
-                            {
-                                if (fromPosition == startOfFirstMessage)
-                                {
+                            public int getBytesToConsume(final int fromPosition) {
+                                if (fromPosition == startOfFirstMessage) {
                                     return consumeFromStart;
                                 }
-                                if (fromPosition < offsetOfFirstMessageChecksum)
-                                {
+                                if (fromPosition < offsetOfFirstMessageChecksum) {
                                     return offsetOfFirstMessageChecksum - fromPosition + consumeFromBoundaryMsg1Msg2;
                                 }
-                                if (fromPosition < offsetOfSecondMessageChecksum)
-                                {
+                                if (fromPosition < offsetOfSecondMessageChecksum) {
                                     return offsetOfSecondMessageChecksum - fromPosition + consumeFromBoundaryMsg2Msg3;
                                 }
-                                if (fromPosition < offsetOfLastMessageChecksum)
-                                {
+                                if (fromPosition < offsetOfLastMessageChecksum) {
                                     return offsetOfLastMessageChecksum - fromPosition + consumeFromMsg3Checksum;
                                 }
                                 return wholeString.length() - fromPosition;
@@ -147,40 +129,31 @@ public class FixStreamMessageParserPermutationsTest
     }
 
     @SuppressWarnings("checkstyle:regexpsinglelinejava")
-    private void performIteration(final ByteBuffer bb, final List<byte[]> expectedMessages, final BytesToConsumeCalculator bytesConsumer)
-    {
+    private void performIteration(final ByteBuffer bb, final List<byte[]> expectedMessages, final BytesToConsumeCalculator bytesConsumer) {
         final List<byte[]> messages = new ArrayList<byte[]>();
         final List<Integer> offsetsUsedForIteration = new ArrayList<Integer>();
 
-        final MessageParserCallback callback = new MessageParserCallback()
-        {
+        final MessageParserCallback callback = new MessageParserCallback() {
             @Override
-            public void onMessage(byte[] buffer, int offset, int length)
-            {
+            public void onMessage(byte[] buffer, int offset, int length) {
                 messages.add(Arrays.copyOfRange(buffer, offset, offset + length));
             }
 
             @Override
-            public void onTruncatedMessage()
-            {
-
+            public void onTruncatedMessage() {
             }
 
             @Override
-            public void onParseError(String error)
-            {
-
+            public void onParseError(String error) {
             }
         };
 
         final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
         parser.initialise(callback);
 
-        try
-        {
+        try {
             int position = 0;
-            while (bb.position() < bb.capacity())
-            {
+            while (bb.position() < bb.capacity()) {
                 final int bytesToConsume = Math.min(bytesConsumer.getBytesToConsume(position), bb.capacity() - bb.position());
                 final int newLimit = position + bytesToConsume;
 
@@ -194,51 +167,39 @@ public class FixStreamMessageParserPermutationsTest
 
             assertThat(messages.size(), is(expectedMessages.size()));
             assertThat(messages, containsAllItems(expectedMessages));
-        }
-        catch (AssertionError e)
-        {
+        } catch (AssertionError e) {
             handleException(bb, offsetsUsedForIteration, e);
             throw e;
-        }
-        catch (RuntimeException e)
-        {
+        } catch (RuntimeException e) {
             handleException(bb, offsetsUsedForIteration, e);
             throw e;
         }
         bb.clear();
     }
 
-    private void handleException(ByteBuffer bb, List<Integer> offsetsUsedForIteration, Throwable e)
-    {
+    private void handleException(ByteBuffer bb, List<Integer> offsetsUsedForIteration, Throwable e) {
         System.out.println("Failed! Message segments used for test: ");
         Integer start = 0;
-        for (Integer end : offsetsUsedForIteration)
-        {
+        for (Integer end : offsetsUsedForIteration) {
             System.out.println(FixMessageUtil.convertFixControlCharacters(Arrays.copyOfRange(bb.array(), start, end)));
             start = end;
         }
     }
 
-    private Matcher<? super List<byte[]>> containsAllItems(final List<byte[]> expectedMessages)
-    {
-        return new TypeSafeMatcher<List<byte[]>>()
-        {
+    private Matcher<? super List<byte[]>> containsAllItems(final List<byte[]> expectedMessages) {
+        return new TypeSafeMatcher<List<byte[]>>() {
             @Override
-            protected boolean matchesSafely(List<byte[]> actualMessages)
-            {
-                if (actualMessages.size() != expectedMessages.size())
-                {
+            protected boolean matchesSafely(List<byte[]> actualMessages) {
+                if (actualMessages.size() != expectedMessages.size()) {
                     return false;
                 }
 
                 Iterator<byte[]> it1 = expectedMessages.iterator(), it2 = actualMessages.iterator();
-                for (; it1.hasNext() && it2.hasNext(); )
-                {
+                for (; it1.hasNext() && it2.hasNext(); ) {
                     byte[] expected = it1.next();
                     byte[] actual = it2.next();
 
-                    if (!Arrays.equals(expected, actual))
-                    {
+                    if (!Arrays.equals(expected, actual)) {
                         return false;
                     }
                 }
@@ -246,8 +207,7 @@ public class FixStreamMessageParserPermutationsTest
             }
 
             @Override
-            public void describeTo(Description description)
-            {
+            public void describeTo(Description description) {
                 description.appendText("Expecting list containing ")
                         .appendValue(expectedMessages.size())
                         .appendText(" items: ")
@@ -256,26 +216,21 @@ public class FixStreamMessageParserPermutationsTest
         };
     }
 
-    private interface BytesToConsumeCalculator
-    {
+    private interface BytesToConsumeCalculator {
         int getBytesToConsume(int fromPosition);
     }
 
-    private static class RandomBytesConsumer implements BytesToConsumeCalculator
-    {
-
+    private static class RandomBytesConsumer implements BytesToConsumeCalculator {
         private final int minBytesPerSegment;
         private final int maxBytesPerSegment;
 
-        RandomBytesConsumer(final int minBytesPerSegment, final int maxBytesPerSegment)
-        {
+        RandomBytesConsumer(final int minBytesPerSegment, final int maxBytesPerSegment) {
             this.minBytesPerSegment = minBytesPerSegment;
             this.maxBytesPerSegment = maxBytesPerSegment;
         }
 
         @Override
-        public int getBytesToConsume(final int fromPosition)
-        {
+        public int getBytesToConsume(final int fromPosition) {
             return ThreadLocalRandom.current().nextInt(minBytesPerSegment, maxBytesPerSegment + 1);
         }
     }
