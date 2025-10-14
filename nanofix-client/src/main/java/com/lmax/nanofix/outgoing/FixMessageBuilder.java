@@ -17,7 +17,7 @@
 package com.lmax.nanofix.outgoing;
 
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 
 import com.lmax.nanofix.fields.BusinessRejectionReason;
@@ -269,7 +269,7 @@ public class FixMessageBuilder {
             return checksumOverride;
         }
 
-        return String.format("%03d", checksum(bodyWithLength.getBytes(Charset.forName("UTF-8"))));
+        return String.format("%03d", checksum(bodyWithLength.getBytes(StandardCharsets.UTF_8)));
     }
 
     private int checksum(final byte[] bytes) {
@@ -284,7 +284,6 @@ public class FixMessageBuilder {
         if (messageLengthOverride != null) {
             return messageLengthOverride;
         }
-
         return String.valueOf(body.length());
     }
 }

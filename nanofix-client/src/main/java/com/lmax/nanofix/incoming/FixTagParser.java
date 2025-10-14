@@ -97,8 +97,8 @@ public final class FixTagParser {
                                        final int equalsIndex) {
         String msg = String.format("Parse Failed: %s at tagStart=%d equalsIndex=%d message=%s",
                                    reason,
-                                   Integer.valueOf(tagStart),
-                                   Integer.valueOf(equalsIndex),
+                                   tagStart,
+                                   equalsIndex,
                                    new String(message, offset, length, FixUtil.getCharset()).replace('\u0001', '|'));
 
         throw new FixParseException(msg);

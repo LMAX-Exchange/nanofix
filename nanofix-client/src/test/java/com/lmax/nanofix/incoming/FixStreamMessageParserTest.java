@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class FixStreamMessageParserTest {
     private static final int MAX_MESSAGE_SIZE = 4096;
@@ -46,7 +46,7 @@ public final class FixStreamMessageParserTest {
 
         ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
 
-        final List<byte[]> messages = new ArrayList<byte[]>();
+        final List<byte[]> messages = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -88,7 +88,7 @@ public final class FixStreamMessageParserTest {
         final ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
         final ByteBuffer inputStream3 = ByteBuffer.wrap(part3);
 
-        final List<byte[]> messages = new ArrayList<byte[]>();
+        final List<byte[]> messages = new ArrayList<>();
 
         final MessageParserCallback callback = createMessageParserCallback(
                 new MyMessageParserCallbackTestFactory(messages));
@@ -119,7 +119,7 @@ public final class FixStreamMessageParserTest {
         final ByteBuffer inputStream2 = ByteBuffer.wrap(part2);
         final ByteBuffer inputStream3 = ByteBuffer.wrap(part3);
 
-        final List<byte[]> messages = new ArrayList<byte[]>();
+        final List<byte[]> messages = new ArrayList<>();
 
         final MessageParserCallback callback = createMessageParserCallback(new MyMessageParserCallbackTestFactory(messages));
         final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
@@ -134,7 +134,7 @@ public final class FixStreamMessageParserTest {
 
 
     @Test
-    public void shouldParseMessageSegmentContainingNeitherCompleteStartPrefixNorEndSuffix() throws Exception {
+    public void shouldParseMessageSegmentContainingNeitherCompleteStartPrefixNorEndSuffix() {
         final byte[] part1 = FixMessageUtil.convertFixControlCharacters("8=FIX.");
         final byte[] part2 = FixMessageUtil.convertFixControlCharacters("4.2|9=");
         final byte[] part3 = FixMessageUtil.convertFixControlCharacters("208|10");
@@ -157,7 +157,7 @@ public final class FixStreamMessageParserTest {
         final ByteBuffer inputStream7 = ByteBuffer.wrap(part7);
         final ByteBuffer inputStream8 = ByteBuffer.wrap(part8);
 
-        final List<byte[]> messages = new ArrayList<byte[]>();
+        final List<byte[]> messages = new ArrayList<>();
 
         final MessageParserCallback callback = createMessageParserCallback(new MyMessageParserCallbackTestFactory(messages));
         final ByteStreamMessageParser parser = new FixStreamMessageParser(MAX_MESSAGE_SIZE);
@@ -251,7 +251,7 @@ public final class FixStreamMessageParserTest {
         inputStream.put(newOrderSingle);
         inputStream.flip();
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -275,7 +275,7 @@ public final class FixStreamMessageParserTest {
 
         parser.parse(inputStream);
 
-        assertTrue(2 == results.size());
+        assertEquals(2, results.size());
         assertArrayEquals(newOrderSingle, results.get(0));
         assertArrayEquals(newOrderSingle, results.get(1));
     }
@@ -289,7 +289,7 @@ public final class FixStreamMessageParserTest {
         inputStream.put(newOrderSingle);
         inputStream.flip();
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -313,7 +313,7 @@ public final class FixStreamMessageParserTest {
 
         parser.parse(inputStream);
 
-        assertTrue(3 == results.size());
+        assertEquals(3, results.size());
         assertArrayEquals(newOrderSingle, results.get(0));
         assertArrayEquals(newOrderSingle, results.get(1));
         assertArrayEquals(newOrderSingle, results.get(2));
@@ -326,7 +326,7 @@ public final class FixStreamMessageParserTest {
         inputStream1.put(newOrderSingle, 0, newOrderSingle.length - 70);
         inputStream1.flip();
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -356,7 +356,7 @@ public final class FixStreamMessageParserTest {
 
         parser.parse(inputStream2);
 
-        assertTrue(1 == results.size());
+        assertEquals(1, results.size());
         assertArrayEquals(newOrderSingle, results.get(0));
     }
 
@@ -367,7 +367,7 @@ public final class FixStreamMessageParserTest {
         inputStream1.put(newOrderSingle, 0, newOrderSingle.length - 3);
         inputStream1.flip();
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -397,7 +397,7 @@ public final class FixStreamMessageParserTest {
 
         parser.parse(inputStream2);
 
-        assertTrue(1 == results.size());
+        assertEquals(1, results.size());
         assertArrayEquals(newOrderSingle, results.get(0));
     }
 
@@ -408,7 +408,7 @@ public final class FixStreamMessageParserTest {
         inputStream1.put(newOrderSingle, 0, newOrderSingle.length - 3);
         inputStream1.flip();
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
 
         MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -439,7 +439,7 @@ public final class FixStreamMessageParserTest {
 
         parser.parse(inputStream2);
 
-        assertTrue(2 == results.size());
+        assertEquals(2, results.size());
         assertArrayEquals(newOrderSingle, results.get(0));
         assertArrayEquals(newOrderSingle, results.get(1));
     }
@@ -452,7 +452,7 @@ public final class FixStreamMessageParserTest {
         ByteBuffer firstBuffer = ByteBuffer.wrap(trunactedExecutionReport);
         ByteBuffer secondBuffer = ByteBuffer.wrap(executionReport);
 
-        final List<byte[]> results = new ArrayList<byte[]>();
+        final List<byte[]> results = new ArrayList<>();
         final int[] truncated = {0};
 
         MessageParserCallback callback = new MessageParserCallback() {

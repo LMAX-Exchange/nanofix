@@ -42,12 +42,8 @@ import org.slf4j.LoggerFactory;
 public final class FixClientFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(FixClientFactory.class);
 
-    static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER = new Thread.UncaughtExceptionHandler() {
-        @Override
-        public void uncaughtException(Thread thread, Throwable throwable) {
-            LOGGER.error("Uncaught Exception thrown in thread: " + thread.getName(), throwable);
-        }
-    };
+    static final Thread.UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER = (thread, throwable) ->
+            LOGGER.error("Uncaught Exception thrown in thread: {}", thread.getName(), throwable);
 
     private FixClientFactory() {
     }
@@ -68,7 +64,7 @@ public final class FixClientFactory {
     }
 
     /**
-     * Create an listening fix client that will listen for inbound tcp connections on port
+     * Create a listening fix client that will listen for inbound tcp connections on port
      *
      * @param port tcp port number int between 0 and 65535
      */

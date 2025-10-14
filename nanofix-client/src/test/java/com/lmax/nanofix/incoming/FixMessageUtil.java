@@ -79,8 +79,7 @@ public final class FixMessageUtil {
         ByteUtil.replace(buffer, 0, buffer.length, BAR, SOH);
     }
 
-    public static void setOrderIdOnNewOrderSingle(final long orderId, final byte[] newOrderSingle)
-            throws Exception {
+    public static void setOrderIdOnNewOrderSingle(final long orderId, final byte[] newOrderSingle) {
         int orderIdOffset = 94;
         ByteUtil.writeLongAsAscii(newOrderSingle, orderIdOffset, orderId);
     }
@@ -108,7 +107,7 @@ public final class FixMessageUtil {
     }
 
     @Test
-    public void shouldSetOrderId() throws Exception {
+    public void shouldSetOrderId() {
         byte[] buffer = Arrays.copyOf(NEW_ORDER_SINGLE, NEW_ORDER_SINGLE.length);
         FixMessageUtil.setOrderIdOnNewOrderSingle(15, buffer);
     }

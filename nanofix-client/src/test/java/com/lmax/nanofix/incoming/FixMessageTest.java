@@ -30,7 +30,7 @@ public class FixMessageTest {
     private static final char PIPE_CHAR = '|';
 
     @Test
-    public void shouldReturnFixMessage() throws Exception {
+    public void shouldReturnFixMessage() {
         final Multimap<Integer, String> multimap = ArrayListMultimap.create();
         multimap.put(1, "firstKey");
         multimap.put(2, "secondKey");
@@ -43,7 +43,7 @@ public class FixMessageTest {
     }
 
     @Test
-    public void shouldReturnFixMessageWithDuplicateKeys() throws Exception {
+    public void shouldReturnFixMessageWithDuplicateKeys() {
         final Multimap<Integer, String> multimap = ArrayListMultimap.create();
         multimap.put(1, "firstKey");
         multimap.put(2, "secondKey");
@@ -57,7 +57,7 @@ public class FixMessageTest {
     }
 
     @Test
-    public void shouldReturnFixMessageWithPipeSeparator() throws Exception {
+    public void shouldReturnFixMessageWithPipeSeparator() {
         final Multimap<Integer, String> multimap = ArrayListMultimap.create();
         multimap.put(1, "firstKey");
         multimap.put(2, "secondKey");
@@ -70,7 +70,7 @@ public class FixMessageTest {
     }
 
     @Test
-    public void shouldReturnFalseIfFixMessageDoesNotHaveTag() throws Exception {
+    public void shouldReturnFalseIfFixMessageDoesNotHaveTag() {
         final Multimap<Integer, String> multimap = ArrayListMultimap.create();
 
         final FixMessage fixMessage = new FixMessage(multimap);
@@ -78,7 +78,7 @@ public class FixMessageTest {
     }
 
     @Test
-    public void shouldReturnFixMessageWithPipeSeparatorWithDuplicateKeys() throws Exception {
+    public void shouldReturnFixMessageWithPipeSeparatorWithDuplicateKeys() {
         final Multimap<Integer, String> multimap = ArrayListMultimap.create();
         multimap.put(1, "firstKey");
         multimap.put(2, "secondKey");

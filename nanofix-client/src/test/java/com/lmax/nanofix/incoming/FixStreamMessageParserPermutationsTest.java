@@ -85,7 +85,7 @@ public class FixStreamMessageParserPermutationsTest {
     }
 
     @Test
-    public void messageBoundaryConditions() throws Exception {
+    public void messageBoundaryConditions() {
         final byte[] msgBytes = Bytes.concat(MESSAGE_1, MESSAGE_2, MESSAGE_3);
         final ByteBuffer bb = ByteBuffer.wrap(msgBytes);
         final List<byte[]> messages = asList(MESSAGE_1, MESSAGE_2, MESSAGE_3);
@@ -104,23 +104,20 @@ public class FixStreamMessageParserPermutationsTest {
                         final int consumeFromBoundaryMsg1Msg2 = j;
                         final int consumeFromBoundaryMsg2Msg3 = k;
                         final int consumeFromMsg3Checksum = l;
-                        performIteration(bb, messages, new BytesToConsumeCalculator() {
-                            @Override
-                            public int getBytesToConsume(final int fromPosition) {
-                                if (fromPosition == startOfFirstMessage) {
-                                    return consumeFromStart;
-                                }
-                                if (fromPosition < offsetOfFirstMessageChecksum) {
-                                    return offsetOfFirstMessageChecksum - fromPosition + consumeFromBoundaryMsg1Msg2;
-                                }
-                                if (fromPosition < offsetOfSecondMessageChecksum) {
-                                    return offsetOfSecondMessageChecksum - fromPosition + consumeFromBoundaryMsg2Msg3;
-                                }
-                                if (fromPosition < offsetOfLastMessageChecksum) {
-                                    return offsetOfLastMessageChecksum - fromPosition + consumeFromMsg3Checksum;
-                                }
-                                return wholeString.length() - fromPosition;
+                        performIteration(bb, messages, fromPosition -> {
+                            if (fromPosition == startOfFirstMessage) {
+                                return consumeFromStart;
                             }
+                            if (fromPosition < offsetOfFirstMessageChecksum) {
+                                return offsetOfFirstMessageChecksum - fromPosition + consumeFromBoundaryMsg1Msg2;
+                            }
+                            if (fromPosition < offsetOfSecondMessageChecksum) {
+                                return offsetOfSecondMessageChecksum - fromPosition + consumeFromBoundaryMsg2Msg3;
+                            }
+                            if (fromPosition < offsetOfLastMessageChecksum) {
+                                return offsetOfLastMessageChecksum - fromPosition + consumeFromMsg3Checksum;
+                            }
+                            return wholeString.length() - fromPosition;
                         });
                     }
                 }
@@ -130,8 +127,8 @@ public class FixStreamMessageParserPermutationsTest {
 
     @SuppressWarnings("checkstyle:regexpsinglelinejava")
     private void performIteration(final ByteBuffer bb, final List<byte[]> expectedMessages, final BytesToConsumeCalculator bytesConsumer) {
-        final List<byte[]> messages = new ArrayList<byte[]>();
-        final List<Integer> offsetsUsedForIteration = new ArrayList<Integer>();
+        final List<byte[]> messages = new ArrayList<>();
+        final List<Integer> offsetsUsedForIteration = new ArrayList<>();
 
         final MessageParserCallback callback = new MessageParserCallback() {
             @Override
@@ -167,10 +164,7 @@ public class FixStreamMessageParserPermutationsTest {
 
             assertThat(messages.size(), is(expectedMessages.size()));
             assertThat(messages, containsAllItems(expectedMessages));
-        } catch (AssertionError e) {
-            handleException(bb, offsetsUsedForIteration, e);
-            throw e;
-        } catch (RuntimeException e) {
+        } catch (AssertionError | RuntimeException e) {
             handleException(bb, offsetsUsedForIteration, e);
             throw e;
         }
@@ -179,7 +173,7 @@ public class FixStreamMessageParserPermutationsTest {
 
     private void handleException(ByteBuffer bb, List<Integer> offsetsUsedForIteration, Throwable e) {
         System.out.println("Failed! Message segments used for test: ");
-        Integer start = 0;
+        int start = 0;
         for (Integer end : offsetsUsedForIteration) {
             System.out.println(FixMessageUtil.convertFixControlCharacters(Arrays.copyOfRange(bb.array(), start, end)));
             start = end;
@@ -187,7 +181,7 @@ public class FixStreamMessageParserPermutationsTest {
     }
 
     private Matcher<? super List<byte[]>> containsAllItems(final List<byte[]> expectedMessages) {
-        return new TypeSafeMatcher<List<byte[]>>() {
+        return new TypeSafeMatcher<>() {
             @Override
             protected boolean matchesSafely(List<byte[]> actualMessages) {
                 if (actualMessages.size() != expectedMessages.size()) {
@@ -195,7 +189,7 @@ public class FixStreamMessageParserPermutationsTest {
                 }
 
                 Iterator<byte[]> it1 = expectedMessages.iterator(), it2 = actualMessages.iterator();
-                for (; it1.hasNext() && it2.hasNext(); ) {
+                while (it1.hasNext() && it2.hasNext()) {
                     byte[] expected = it1.next();
                     byte[] actual = it2.next();
 

@@ -16,7 +16,6 @@
 
 package com.lmax.nanofix.incoming;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Before;
@@ -37,7 +36,7 @@ public final class FixTagParserTest {
     private FixTagHandler fixTagHandler;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         fixTagHandler = mock(FixTagHandler.class);
     }
 
@@ -61,7 +60,7 @@ public final class FixTagParserTest {
     }
 
     @Test
-    public void shouldCountTagsSeparatedByMultipleSeparatorsMessage() throws UnsupportedEncodingException {
+    public void shouldCountTagsSeparatedByMultipleSeparatorsMessage() {
         given(fixTagHandler.isFinished()).willReturn(false);
 
         final byte[] msg = "8=FIX.4.2\u00019=105|35=A|34=1|49=marketm155yjtfwicmfe\u000152=20100713-17:04:39.641|56=FIX-API|95=9|96=P4ssword.|98=0\u0001108=2|141=Y|10=191|"

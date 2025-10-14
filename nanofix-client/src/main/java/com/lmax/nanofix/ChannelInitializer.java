@@ -50,15 +50,12 @@ class ChannelInitializer implements ConnectionObserver {
     @Override
     public void connectionEstablished() {
         outboundMessageSender.initialiseOutboundChannel(transport.getWritableByteChannel());
-        channelReaderExecutorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                final ReadableByteChannel readableByteChannel = transport.getReadableByteChannel();
-                try {
-                    inputStreamReader.blockingStart(readableByteChannel);
-                } catch (RuntimeException e) {
-                    LOGGER.error("Exception thrown while reading from stream, channel: " + readableByteChannel, e);
-                }
+        channelReaderExecutorService.execute(() -> {
+            final ReadableByteChannel readableByteChannel = transport.getReadableByteChannel();
+            try {
+                inputStreamReader.blockingStart(readableByteChannel);
+            } catch (RuntimeException e) {
+                LOGGER.error("Exception thrown while reading from stream, channel: {}", readableByteChannel, e);
             }
         });
         countDownLatch.countDown();

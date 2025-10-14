@@ -38,7 +38,7 @@ public final class FixClientConfiguration {
     }
 
     /**
-     * Listening listening fix client that will listen for inbound tcp connections on port
+     * Listening fix client that will listen for inbound tcp connections on port
      *
      * @param port tcp port number int between 0 and 65535
      */

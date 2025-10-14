@@ -73,7 +73,7 @@ public class FixClient {
     }
 
     /**
-     * Sends a array of bytes string.
+     * Sends an array of bytes string.
      *
      * @param bytes a FIX messages.
      */
@@ -82,7 +82,7 @@ public class FixClient {
     }
 
     /**
-     * Initiates a TCP connection with the remote host specified on construction..
+     * Initiates a TCP connection with the remote host specified on construction.
      */
     public void connect() {
         transportOps.connect();
@@ -94,7 +94,7 @@ public class FixClient {
     }
 
     /**
-     * Initiates a TCP connection with the remote host specified on construction..
+     * Initiates a TCP connection with the remote host specified on construction.
      *
      * @param timeout the time to wait for a connection to be established
      * @param units   the {@link TimeUnit unit} of the timeout

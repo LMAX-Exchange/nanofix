@@ -55,48 +55,41 @@ public class AsyncTcpSocketFactory implements SocketFactory {
 
     @Override
     public void createSocketOnIncomingConnection(final DelegatingServerSocketChannel serverSocketChannel, final SocketEstablishedCallback socketEstablishedCallback) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                final SocketChannel socketChannel;
+        executorService.execute(() -> {
+            final SocketChannel socketChannel;
+            try {
                 try {
-                    try {
-                        socketChannel = serverSocketChannel.accept();
-                        socketEstablishedCallback.onSocketEstablished(socketChannel);
-                    } catch (AsynchronousCloseException e) {
-                        LOGGER.warn("Server socket closed by another thread,  while waiting to accept a new inbound connection.");
-                    } catch (ClosedChannelException e) {
-                        LOGGER.warn("Server socket closed,  while waiting to accept a new inbound connection.", e);
-                    } catch (IOException e) {
-                        LOGGER.error("IOException occurred while waiting for a connection", e);
-                        throw new GeneralRuntimeException("Failed to accept server socket channel", e);
-                    }
-
-                } catch (RuntimeException e) {
-                    LOGGER.error("Exception thrown: ", e);
+                    socketChannel = serverSocketChannel.accept();
+                    socketEstablishedCallback.onSocketEstablished(socketChannel);
+                } catch (AsynchronousCloseException e) {
+                    LOGGER.warn("Server socket closed by another thread,  while waiting to accept a new inbound connection.");
+                } catch (ClosedChannelException e) {
+                    LOGGER.warn("Server socket closed,  while waiting to accept a new inbound connection.", e);
+                } catch (IOException e) {
+                    LOGGER.error("IOException occurred while waiting for a connection", e);
+                    throw new GeneralRuntimeException("Failed to accept server socket channel", e);
                 }
+
+            } catch (RuntimeException e) {
+                LOGGER.error("Exception thrown: ", e);
             }
         });
     }
 
     @Override
     public void createSocketOnOutgoingConnection(final InetSocketAddress socketAddress, final SocketEstablishedCallback socketEstablishedCallback) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
+        executorService.execute(() -> {
+            try {
+                final SocketChannel socketChannel;
                 try {
-                    final SocketChannel socketChannel;
-                    try {
-                        socketChannel = SocketChannel.open(socketAddress);
-                        socketEstablishedCallback.onSocketEstablished(socketChannel);
-                    } catch (IOException e) {
-                        throw new RuntimeException(String.format("Can't connect - host:%s, port:%d", socketAddress.getHostName(), socketAddress.getPort()), e);
-                    }
-                } catch (RuntimeException e) {
-                    LOGGER.error("Caught Exception while executing", e);
+                    socketChannel = SocketChannel.open(socketAddress);
+                    socketEstablishedCallback.onSocketEstablished(socketChannel);
+                } catch (IOException e) {
+                    throw new RuntimeException(String.format("Can't connect - host:%s, port:%d", socketAddress.getHostName(), socketAddress.getPort()), e);
                 }
+            } catch (RuntimeException e) {
+                LOGGER.error("Caught Exception while executing", e);
             }
-
         });
     }
 }
