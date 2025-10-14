@@ -18,45 +18,38 @@ package com.lmax.nanofix.byteoperations;
 
 import java.nio.charset.StandardCharsets;
 
-public final class ByteUtil
-{
+public final class ByteUtil {
     public static final int MAX_UNSIGNED_SHORT = (1 << 16) - 1;
 
-    public static void writeLongAsAscii(final byte[] outputBuffer, final int offset, final long valueParam)
-    {
+    public static void writeLongAsAscii(final byte[] outputBuffer, final int offset, final long valueParam) {
         long value = valueParam;
-        if (value < 0 || value > 9000000000000000000L)
-        {
+        if (value < 0 || value > 9000000000000000000L) {
             throw new IllegalArgumentException("Value out of range: value=" + value);
         }
 
         int outputBufferIndex = offset + 18;
 
         long factor = 1;
-        while (value >= factor)
-        {
+        while (value >= factor) {
             long remainder = value % (factor * 10);
 
-            outputBuffer[outputBufferIndex--] = (byte) ((remainder / factor) + 48);
+            outputBuffer[outputBufferIndex--] = (byte)((remainder / factor) + 48);
 
             value -= remainder;
             factor *= 10;
         }
 
-        final byte zero = (byte) 48;
-        while (outputBufferIndex >= offset)
-        {
+        final byte zero = (byte)48;
+        while (outputBufferIndex >= offset) {
             outputBuffer[outputBufferIndex--] = zero;
         }
     }
 
-    public static boolean isAsciiDigit(final byte asciiCharacter)
-    {
+    public static boolean isAsciiDigit(final byte asciiCharacter) {
         return asciiCharacter > 47 && asciiCharacter < 58;
     }
 
-    public static String formatIntAsIpAddress(final int address)
-    {
+    public static String formatIntAsIpAddress(final int address) {
         StringBuilder buffer = new StringBuilder();
 
         formatIntAsIpAddress(buffer, address);
@@ -64,8 +57,7 @@ public final class ByteUtil
         return buffer.toString();
     }
 
-    public static void formatIntAsIpAddress(final StringBuilder buffer, final int address)
-    {
+    public static void formatIntAsIpAddress(final StringBuilder buffer, final int address) {
         buffer.append((address >>> 24) & 0xFF);
         buffer.append('.');
         buffer.append((address >>> 16) & 0xFF);
@@ -75,25 +67,21 @@ public final class ByteUtil
         buffer.append(address & 0xFF);
     }
 
-    public static long packLongWithUnsignedShortInts(final int int1, final int int2, final int int3, final int int4)
-    {
+    public static long packLongWithUnsignedShortInts(final int int1, final int int2, final int int3, final int int4) {
         checkUnsignedShort(int1);
         checkUnsignedShort(int2);
         checkUnsignedShort(int3);
         checkUnsignedShort(int4);
 
         return ((int1 & 0xFFFFL) << 48) +
-                ((int2 & 0xFFFFL) << 32) +
-                ((int3 & 0xFFFFL) << 16) +
-                (int4 & 0xFFFFL);
+               ((int2 & 0xFFFFL) << 32) +
+               ((int3 & 0xFFFFL) << 16) +
+               (int4 & 0xFFFFL);
     }
 
-    public static boolean isEqual(final byte[] lhs, final int lhsOffset, final byte[] rhs, final int rhsOffset, final int length)
-    {
-        for (int i = 0; i < length; i++)
-        {
-            if (lhs[lhsOffset + i] != rhs[rhsOffset + i])
-            {
+    public static boolean isEqual(final byte[] lhs, final int lhsOffset, final byte[] rhs, final int rhsOffset, final int length) {
+        for (int i = 0; i < length; i++) {
+            if (lhs[lhsOffset + i] != rhs[rhsOffset + i]) {
                 return false;
             }
         }
@@ -101,21 +89,17 @@ public final class ByteUtil
         return true;
     }
 
-    public static int readIntFromAscii(final byte[] asciiBuffer, final int offset, final int length)
-    {
+    public static int readIntFromAscii(final byte[] asciiBuffer, final int offset, final int length) {
         int value = 0;
         int power = length;
-        for (int i = offset; power > 0; i++, power--)
-        {
+        for (int i = offset; power > 0; i++, power--) {
             byte b = asciiBuffer[i];
-            if (!isAsciiDigit(b))
-            {
+            if (!isAsciiDigit(b)) {
                 throw new IllegalArgumentException(b + " is not a digit");
             }
 
             int digitValue = b - 48;
-            for (int p = power; p > 1; p--)
-            {
+            for (int p = power; p > 1; p--) {
                 digitValue *= 10;
             }
 
@@ -125,21 +109,17 @@ public final class ByteUtil
         return value;
     }
 
-    public static long readLongFromAscii(final byte[] asciiBuffer, final int offset, final int length)
-    {
+    public static long readLongFromAscii(final byte[] asciiBuffer, final int offset, final int length) {
         long value = 0;
         long power = length;
-        for (int i = offset; power > 0; i++, power--)
-        {
+        for (int i = offset; power > 0; i++, power--) {
             byte b = asciiBuffer[i];
-            if (!isAsciiDigit(b))
-            {
+            if (!isAsciiDigit(b)) {
                 throw new IllegalArgumentException(b + " is not a digit");
             }
 
             long digitValue = b - 48;
-            for (long p = power; p > 1; p--)
-            {
+            for (long p = power; p > 1; p--) {
                 digitValue *= 10L;
             }
 
@@ -149,12 +129,9 @@ public final class ByteUtil
         return value;
     }
 
-    public static boolean isInteger(final byte[] asciiBuffer, final int offset, final int length)
-    {
-        for (int i = 0; i < length; i++)
-        {
-            if (!isAsciiDigit(asciiBuffer[offset + i]))
-            {
+    public static boolean isInteger(final byte[] asciiBuffer, final int offset, final int length) {
+        for (int i = 0; i < length; i++) {
+            if (!isAsciiDigit(asciiBuffer[offset + i])) {
                 return false;
             }
         }
@@ -163,38 +140,30 @@ public final class ByteUtil
     }
 
     public static void replace(final byte[] buffer, final int offset, final int length,
-                               final byte target, final byte replacement)
-    {
-        for (int i = 0; i < length; i++)
-        {
+                               final byte target, final byte replacement) {
+        for (int i = 0; i < length; i++) {
             int location = i + offset;
-            if (target == buffer[location])
-            {
+            if (target == buffer[location]) {
                 buffer[location] = replacement;
             }
         }
     }
 
     public static void asciiEncode(final CharSequence chars, final int charOffset,
-                                   final byte[] buffer, final int bufferOffset, final int length)
-    {
-        for (int i = 0; i < length; i++)
-        {
+                                   final byte[] buffer, final int bufferOffset, final int length) {
+        for (int i = 0; i < length; i++) {
             int charValue = chars.charAt(i + charOffset);
 
-            if (charValue > 127)
-            {
+            if (charValue > 127) {
                 throw new IllegalArgumentException("Character " + chars.charAt(i + charOffset) + " is not " + StandardCharsets.US_ASCII);
             }
 
-            buffer[i + bufferOffset] = (byte) charValue;
+            buffer[i + bufferOffset] = (byte)charValue;
         }
     }
 
-    private static void checkUnsignedShort(final int value)
-    {
-        if (value < 0 || value > MAX_UNSIGNED_SHORT)
-        {
+    private static void checkUnsignedShort(final int value) {
+        if (value < 0 || value > MAX_UNSIGNED_SHORT) {
             throw new IllegalArgumentException("Value outside range for unsigned short integer [0-65535]: " + value);
         }
     }

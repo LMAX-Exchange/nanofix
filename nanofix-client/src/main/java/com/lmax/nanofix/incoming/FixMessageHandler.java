@@ -16,7 +16,6 @@
 
 package com.lmax.nanofix.incoming;
 
-public interface FixMessageHandler
-{
+public interface FixMessageHandler {
     void onFixMessage(FixMessage fixMessage);
 }

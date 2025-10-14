@@ -16,10 +16,8 @@
 
 package com.lmax.nanofix.transport;
 
-public class BindException extends RuntimeException
-{
-    public BindException(final String message, final Throwable cause)
-    {
+public class BindException extends RuntimeException {
+    public BindException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

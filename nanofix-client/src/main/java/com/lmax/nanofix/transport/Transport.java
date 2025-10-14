@@ -19,8 +19,7 @@ package com.lmax.nanofix.transport;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-public interface Transport extends TransportOperations
-{
+public interface Transport extends TransportOperations {
     ReadableByteChannel getReadableByteChannel();
 
     WritableByteChannel getWritableByteChannel();

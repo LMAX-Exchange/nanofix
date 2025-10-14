@@ -22,22 +22,18 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 
 
-public class FixMessageFactoryTest
-{
+public class FixMessageFactoryTest {
     private static final byte ONE = 1;
     private static final byte TWO = 1;
     private static final byte THREE = 1;
 
     @Test
-    public void shouldConstructFixMessage() throws Exception
-    {
+    public void shouldConstructFixMessage() throws Exception {
         final byte[] msg1 = {ONE, TWO, THREE};
 
-        final FixMessageStreamFactory fixMessageStreamFactory = new FixMessageStreamFactory(new FixMessageHandler()
-        {
+        final FixMessageStreamFactory fixMessageStreamFactory = new FixMessageStreamFactory(new FixMessageHandler() {
             @Override
-            public void onFixMessage(final FixMessage fixMessage)
-            {
+            public void onFixMessage(final FixMessage fixMessage) {
                 Assert.assertThat(fixMessage.getFirstValue(1), is(new String(msg1, 0, 1)));
                 Assert.assertThat(fixMessage.getFirstValue(2), is(new String(msg1, 1, 2)));
 

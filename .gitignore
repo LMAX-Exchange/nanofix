@@ -2,18 +2,18 @@
 /client/build
 /integration-tests/build
 /out
-/ideabuild/
-/eclipse
 /opt
 /cache
 /ivysettings.xml
 /foo.txt
 /foo.xml
-/.idea
-*.iml
 /nanofix.ipr
 
 .gradle/
+
+/.idea/
+*.iml
+!.idea/codeStyleSettings.xml
 
 nanofix-client/build/
 

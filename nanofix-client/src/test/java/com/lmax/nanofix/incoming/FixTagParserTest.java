@@ -32,20 +32,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 
-public final class FixTagParserTest
-{
+public final class FixTagParserTest {
 
     private FixTagHandler fixTagHandler;
 
     @Before
-    public void setUp() throws Exception
-    {
+    public void setUp() throws Exception {
         fixTagHandler = mock(FixTagHandler.class);
     }
 
     @Test
-    public void shouldCountTagsCorrectlyInMessage()
-    {
+    public void shouldCountTagsCorrectlyInMessage() {
 
         given(fixTagHandler.isFinished()).willReturn(false);
 
@@ -64,8 +61,7 @@ public final class FixTagParserTest
     }
 
     @Test
-    public void shouldCountTagsSeparatedByMultipleSeparatorsMessage() throws UnsupportedEncodingException
-    {
+    public void shouldCountTagsSeparatedByMultipleSeparatorsMessage() throws UnsupportedEncodingException {
         given(fixTagHandler.isFinished()).willReturn(false);
 
         final byte[] msg = "8=FIX.4.2\u00019=105|35=A|34=1|49=marketm155yjtfwicmfe\u000152=20100713-17:04:39.641|56=FIX-API|95=9|96=P4ssword.|98=0\u0001108=2|141=Y|10=191|"
@@ -86,8 +82,7 @@ public final class FixTagParserTest
     }
 
     @Test
-    public void shouldReportFirstThreeTags()
-    {
+    public void shouldReportFirstThreeTags() {
         given(fixTagHandler.isFinished()).willReturn(false);
 
         final byte[] logonMsg = FixMessageUtil.getLogonMessage();
@@ -107,8 +102,7 @@ public final class FixTagParserTest
     }
 
     @Test
-    public void shouldStopReadingWhenTheMessageIsNotLogon()
-    {
+    public void shouldStopReadingWhenTheMessageIsNotLogon() {
         final byte[] newOrderSingleMsg = FixMessageUtil.getNewOrderSingle();
 
         final InOrder inOrder = BDDMockito.inOrder(fixTagHandler);
@@ -133,8 +127,7 @@ public final class FixTagParserTest
     }
 
     @Test
-    public void shouldIgnoreEqualsCharInStringValue()
-    {
+    public void shouldIgnoreEqualsCharInStringValue() {
         final byte[] msg = "8=FIX.4.4|9=131|35=j|58=Invalid request type [263=3]|10=029|".getBytes(StandardCharsets.US_ASCII);
 
         final FixTagParser parser = new FixTagParser(fixTagHandler, new byte[]{124});

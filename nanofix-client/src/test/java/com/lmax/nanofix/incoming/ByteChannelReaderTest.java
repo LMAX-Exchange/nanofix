@@ -31,16 +31,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-public class ByteChannelReaderTest
-{
+public class ByteChannelReaderTest {
     private final ReadableByteChannel readableByteChannel = Mockito.mock(ReadableByteChannel.class);
     private final ByteStreamMessageParser byteStreamMessageParser = Mockito.mock(ByteStreamMessageParser.class);
     private final ConnectionObserver connectionObserver = Mockito.mock(ConnectionObserver.class);
     private final ByteChannelReader inputStreamReader = new ByteChannelReader(byteStreamMessageParser, new ThreadBlocker(), connectionObserver);
 
     @Test
-    public void shouldPassBytesFromInputStreamToParser() throws Exception
-    {
+    public void shouldPassBytesFromInputStreamToParser() throws Exception {
         given(readableByteChannel.isOpen()).willReturn(false);
         given(readableByteChannel.read(any(ByteBuffer.class))).willReturn(1, -1);
 
@@ -50,24 +48,19 @@ public class ByteChannelReaderTest
     }
 
     @Test(expected = RuntimeException.class)
-    public void shouldCloseInputStreamIfExceptionIsThrownAndInputStreamIsStillOpen() throws Exception
-    {
+    public void shouldCloseInputStreamIfExceptionIsThrownAndInputStreamIsStillOpen() throws Exception {
         given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new RuntimeException("boom!"));
         given(readableByteChannel.isOpen()).willReturn(true);
 
-        try
-        {
+        try {
             inputStreamReader.blockingStart(readableByteChannel);
-        }
-        finally
-        {
+        } finally {
             verify(readableByteChannel).close();
         }
     }
 
     @Test
-    public void shouldNotifyTransportObserverWhenConnectionIsClosed() throws Exception
-    {
+    public void shouldNotifyTransportObserverWhenConnectionIsClosed() throws Exception {
         given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new ClosedChannelException());
 
         inputStreamReader.blockingStart(readableByteChannel);
@@ -76,8 +69,7 @@ public class ByteChannelReaderTest
     }
 
     @Test
-    public void shouldNotifyTransportObserverWhenIOExceptionIsThrown() throws Exception
-    {
+    public void shouldNotifyTransportObserverWhenIOExceptionIsThrown() throws Exception {
         given(readableByteChannel.read(any(ByteBuffer.class))).willThrow(new IOException());
 
         inputStreamReader.blockingStart(readableByteChannel);
@@ -86,8 +78,7 @@ public class ByteChannelReaderTest
     }
 
     @Test
-    public void shouldCloseChannelWhenEndOfStreamIsReached() throws Exception
-    {
+    public void shouldCloseChannelWhenEndOfStreamIsReached() throws Exception {
         given(readableByteChannel.read(any(ByteBuffer.class))).willReturn(-1);
         given(readableByteChannel.isOpen()).willReturn(true);
 

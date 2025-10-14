@@ -7,19 +7,18 @@ import java.time.ZonedDateTime;
 
 import com.lmax.nanofix.fields.EncryptMethod;
 import com.lmax.nanofix.fields.MsgType;
+
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public class FixMessageBuilderTest
-{
+public class FixMessageBuilderTest {
 
     private static final ZonedDateTime SENDING_TIME = ZonedDateTime.of(LocalDateTime.of(2016, 1, 2, 3, 4), ZoneOffset.UTC);
 
     @Test
-    public void shouldBuildFix44MessageByDefault()
-    {
+    public void shouldBuildFix44MessageByDefault() {
         final FixMessage fixMessage = new FixMessageBuilder().messageType(MsgType.LOGIN).senderCompID("SenderCompID").
                 targetCompID("TargetCompId").encryptMethod(EncryptMethod.NONE).heartBtInt(1).msgSeqNum(1).sendingTime(SENDING_TIME).build();
         final String expectedFixMessage = fixMessage.toFixString();
@@ -28,8 +27,7 @@ public class FixMessageBuilderTest
     }
 
     @Test
-    public void shouldBuildFix42MessageWhenSpecified()
-    {
+    public void shouldBuildFix42MessageWhenSpecified() {
         final FixMessage fixMessage = new FixMessageBuilder("FIX.4.2").messageType(MsgType.LOGIN).senderCompID("SenderCompID").
                 targetCompID("TargetCompId").encryptMethod(EncryptMethod.NONE).heartBtInt(1).msgSeqNum(1).sendingTime(SENDING_TIME).build();
         final String expectedFixMessage = fixMessage.toFixString();
@@ -38,8 +36,7 @@ public class FixMessageBuilderTest
     }
 
     @Test
-    public void shouldBuildFix424MessageWithRawData()
-    {
+    public void shouldBuildFix424MessageWithRawData() {
         final FixMessage fixMessage = new FixMessageBuilder("FIX.4.2").messageType(MsgType.LOGIN).senderCompID("SenderCompID").
                 targetCompID("TargetCompId").encryptMethod(EncryptMethod.NONE).rawData("RawData").heartBtInt(1).msgSeqNum(1).sendingTime(SENDING_TIME).build();
         final String expectedFixMessage = fixMessage.toFixString();
@@ -48,16 +45,14 @@ public class FixMessageBuilderTest
     }
 
     @Test
-    public void shouldBeAbleToBuildMessageWithArbitaryTagAndValue()
-    {
+    public void shouldBeAbleToBuildMessageWithArbitaryTagAndValue() {
         final FixMessage fixMessage = new FixMessageBuilder("FIX.99").append(666666, "JunkData").build();
         final String expectedFixMessage = fixMessage.toFixString();
         assertThat(expectedFixMessage, is("8=FIX.99\u00019=16\u0001666666=JunkData\u000110=111\u0001"));
     }
 
     @Test
-    public void shouldBuildAnInvalidFixMessageBecauseOfTagOrder()
-    {
+    public void shouldBuildAnInvalidFixMessageBecauseOfTagOrder() {
         FixMessage fixMessage = new FixMessageBuilder("FIX.4.2")
                 .msgSeqNum(100)
                 .append(123, "Y")
@@ -69,13 +64,11 @@ public class FixMessageBuilderTest
     }
 
     @Test
-    public void shouldBuildFixMessageContainingPriceWithTrailingZeros()
-    {
+    public void shouldBuildFixMessageContainingPriceWithTrailingZeros() {
         FixMessage fixMessage = new FixMessageBuilder("FIX.4.2")
                 .price("10.0000")
                 .build();
 
         assertThat(fixMessage.toFixString(), is("8=FIX.4.2\u00019=11\u000144=10.0000\u000110=237\u0001"));
-
     }
 }

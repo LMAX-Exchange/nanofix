@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.transport;
 
-public interface ConnectionObserver
-{
+public interface ConnectionObserver {
     void connectionEstablished();
 
     void connectionClosed();

@@ -24,9 +24,7 @@ import java.nio.ByteBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class FixStreamMessageParser
-    implements ByteStreamMessageParser
-{
+public final class FixStreamMessageParser implements ByteStreamMessageParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(FixStreamMessageParser.class);
 
     public static final byte ASCII_SOH = 1;
@@ -38,51 +36,43 @@ public final class FixStreamMessageParser
     public static final byte ASCII_I = 73;
     public static final byte ASCII_X = 88;
 
-    private static final int FIX_MESSAGE_START_CODEC = Bits.readInt(new byte[] {
+    private static final int FIX_MESSAGE_START_CODEC = Bits.readInt(new byte[]{
             FixStreamMessageParser.ASCII_8, FixStreamMessageParser.ASCII_EQUALS, FixStreamMessageParser.ASCII_F, FixStreamMessageParser.ASCII_I}, 0);
-    private static final int FIX_MESSAGE_END_CODEC = Bits.readInt(new byte[] {
+    private static final int FIX_MESSAGE_END_CODEC = Bits.readInt(new byte[]{
             FixStreamMessageParser.ASCII_SOH, FixStreamMessageParser.ASCII_1, FixStreamMessageParser.ASCII_0, FixStreamMessageParser.ASCII_EQUALS}, 0);
 
     private final ByteBuffer fragmentedMessage;
     private final int maxMessageSize;
     private MessageParserCallback messageParserCallback;
 
-    public FixStreamMessageParser(final int maxMessageSize)
-    {
+    public FixStreamMessageParser(final int maxMessageSize) {
         this.maxMessageSize = maxMessageSize;
         this.fragmentedMessage = ByteBuffer.allocate(maxMessageSize);
     }
 
     @Override
-    public void initialise(final MessageParserCallback messageParserCallback)
-    {
+    public void initialise(final MessageParserCallback messageParserCallback) {
         this.fragmentedMessage.clear();
         this.messageParserCallback = messageParserCallback;
     }
 
     @Override
-    public void parse(final ByteBuffer segment)
-    {
+    public void parse(final ByteBuffer segment) {
         final int segmentLimit = segment.limit();
-        try
-        {
-            if (fragmentedMessage.position() > 0)
-            {
+        try {
+            if (fragmentedMessage.position() > 0) {
                 handleFragmentContinuation(segment);
             }
 
-            while (segment.position() < segmentLimit)
-            {
+            while (segment.position() < segmentLimit) {
                 handleNextMessage(segment);
             }
-        }
-        catch (final Exception ex)
-        {
+        } catch (final Exception ex) {
             final String msg = String.format("Exception parsing segment:%n%s %n%s %n adding to %n%s %n%s",
-                segment.toString(),
-                new String(segment.array(), 0, segmentLimit, FixUtil.getCharset()),
-                fragmentedMessage.toString(),
-                new String(fragmentedMessage.array(), 0, fragmentedMessage.position(), FixUtil.getCharset()));
+                                             segment.toString(),
+                                             new String(segment.array(), 0, segmentLimit, FixUtil.getCharset()),
+                                             fragmentedMessage.toString(),
+                                             new String(fragmentedMessage.array(), 0, fragmentedMessage.position(), FixUtil.getCharset()));
 
             LOGGER.warn(msg, ex);
             messageParserCallback.onParseError(msg);
@@ -90,10 +80,8 @@ public final class FixStreamMessageParser
         }
     }
 
-    private void handleFragmentContinuation(final ByteBuffer segment)
-    {
-        if(!segment.hasRemaining())
-        {
+    private void handleFragmentContinuation(final ByteBuffer segment) {
+        if (!segment.hasRemaining()) {
             return;
         }
 
@@ -103,8 +91,7 @@ public final class FixStreamMessageParser
         handleFragmentedMessage(segment);
     }
 
-    private void consumeIntoFragmentedMessage(final ByteBuffer segment, final int start, int end)
-    {
+    private void consumeIntoFragmentedMessage(final ByteBuffer segment, final int start, int end) {
         final boolean foundMessageBoundary = end != -1;
         final int newEnd = foundMessageBoundary ? end : segment.limit();
 
@@ -112,18 +99,15 @@ public final class FixStreamMessageParser
         final int bytesToConsume = Math.min(newEnd - start, remainingFragmentCapacity);
 
         fragmentedMessage.put(segment.array(), start, bytesToConsume);
-        if (!foundMessageBoundary && 0 == fragmentedMessage.remaining() || bytesToConsume == 0)
-        {
+        if (!foundMessageBoundary && 0 == fragmentedMessage.remaining() || bytesToConsume == 0) {
             handleTruncatedMessage();
         }
     }
 
-    private void handleFragmentedMessage(final ByteBuffer segment)
-    {
+    private void handleFragmentedMessage(final ByteBuffer segment) {
         final int currentPosition = fragmentedMessage.position();
 
-        if (0 == currentPosition)
-        {
+        if (0 == currentPosition) {
             return;
         }
 
@@ -132,42 +116,33 @@ public final class FixStreamMessageParser
         final int begin = findBeginningOfNextMessage(fragmentedMessage);
         final int end = begin == -1 ? -1 : findEndOfCurrentMessage(fragmentedMessage);
 
-        if (-1 != end)
-        {
+        if (-1 != end) {
             callbackMessage(fragmentedMessage.array(), begin, end);
             // our fragmented message didnt need all the bytes in the incoming segment,
             // so rewind the segment by the exact number of bytes we didnt use
             segment.position(segment.position() - (fragmentedMessage.limit() - end));
             fragmentedMessage.clear();
-        }
-        else
-        {
+        } else {
             fragmentedMessage.limit(fragmentedMessage.capacity());
             fragmentedMessage.position(currentPosition);
         }
     }
 
-    private void consumeIntoFragmentedMessage(final ByteBuffer segment)
-    {
+    private void consumeIntoFragmentedMessage(final ByteBuffer segment) {
         final int remainingFragmentCapacity = fragmentedMessage.remaining();
-        if (segment.remaining() < remainingFragmentCapacity)
-        {
+        if (segment.remaining() < remainingFragmentCapacity) {
             fragmentedMessage.put(segment);
-        }
-        else
-        {
+        } else {
             fragmentedMessage.put(segment.array(), segment.position(), remainingFragmentCapacity);
             handleTruncatedMessage();
             segment.position(segment.position() + remainingFragmentCapacity);
         }
     }
 
-    private int findCurrentFragmentedMessageBoundary(final ByteBuffer incoming)
-    {
+    private int findCurrentFragmentedMessageBoundary(final ByteBuffer incoming) {
         final int origPos = incoming.position();
         int fragmentedMessageEndBoundary = findBeginningOfNextMessage(incoming);
-        if (fragmentedMessageEndBoundary == -1)
-        {
+        if (fragmentedMessageEndBoundary == -1) {
             incoming.position(origPos);
             fragmentedMessageEndBoundary = findEndOfCurrentMessage(incoming);
         }
@@ -175,48 +150,37 @@ public final class FixStreamMessageParser
         return fragmentedMessageEndBoundary;
     }
 
-    private void handleTruncatedMessage()
-    {
+    private void handleTruncatedMessage() {
         messageParserCallback.onTruncatedMessage();
         callbackMessage(fragmentedMessage.array(), 0, fragmentedMessage.position());
         fragmentedMessage.clear();
     }
 
-    private void handleNextMessage(final ByteBuffer segment)
-    {
+    private void handleNextMessage(final ByteBuffer segment) {
         final int origPos = segment.position();
         final int begin = findBeginningOfNextMessage(segment);
-        if (-1 != begin)
-        {
+        if (-1 != begin) {
             final int end = findEndOfCurrentMessage(segment);
-            if (-1 != end)
-            {
+            if (-1 != end) {
                 callbackMessage(segment.array(), begin, end);
-            }
-            else
-            {
+            } else {
                 segment.position(begin);
 
                 consumeIntoFragmentedMessage(segment);
             }
-        }
-        else
-        {
+        } else {
             segment.position(origPos);
             consumeIntoFragmentedMessage(segment);
         }
     }
 
-    private int findBeginningOfNextMessage(final ByteBuffer segment)
-    {
+    private int findBeginningOfNextMessage(final ByteBuffer segment) {
         final byte[] buffer = segment.array();
         int pos = segment.position();
         final int limit = segment.limit();
 
-        while (pos < limit)
-        {
-            if (isStartOfMessage(buffer, pos, limit))
-            {
+        while (pos < limit) {
+            if (isStartOfMessage(buffer, pos, limit)) {
                 segment.position(pos);
                 return pos;
             }
@@ -229,29 +193,23 @@ public final class FixStreamMessageParser
         return -1;
     }
 
-    private boolean isStartOfMessage(final byte[] buffer, final int pos, final int limit)
-    {
+    private boolean isStartOfMessage(final byte[] buffer, final int pos, final int limit) {
         return
-            pos + 4 < limit &&
+                pos + 4 < limit &&
                 FIX_MESSAGE_START_CODEC == Bits.readInt(buffer, pos) &&
                 buffer[pos + 4] == ASCII_X;
     }
 
-    private int findEndOfCurrentMessage(final ByteBuffer segment)
-    {
+    private int findEndOfCurrentMessage(final ByteBuffer segment) {
         final byte[] buffer = segment.array();
         int pos = segment.position();
         final int limit = segment.limit();
 
-        while (pos < limit)
-        {
-            if (isStartOfChecksum(buffer, pos, limit))
-            {
+        while (pos < limit) {
+            if (isStartOfChecksum(buffer, pos, limit)) {
                 pos += 4;
-                while (pos < limit)
-                {
-                    if (ASCII_SOH == buffer[pos++])
-                    {
+                while (pos < limit) {
+                    if (ASCII_SOH == buffer[pos++]) {
                         segment.position(pos);
                         return pos;
                     }
@@ -266,19 +224,15 @@ public final class FixStreamMessageParser
         return -1;
     }
 
-    private boolean isStartOfChecksum(final byte[] buffer, final int pos, final int limit)
-    {
+    private boolean isStartOfChecksum(final byte[] buffer, final int pos, final int limit) {
         return pos + 3 < limit &&
-            FIX_MESSAGE_END_CODEC == Bits.readInt(buffer, pos);
+               FIX_MESSAGE_END_CODEC == Bits.readInt(buffer, pos);
     }
 
-    private void callbackMessage(final byte[] buffer, final int startPos, final int endPos)
-    {
-        if(endPos - startPos > maxMessageSize)
-        {
+    private void callbackMessage(final byte[] buffer, final int startPos, final int endPos) {
+        if (endPos - startPos > maxMessageSize) {
             throw new IllegalStateException("Msg size [" + (endPos - startPos) + "], Max allowed size [" + maxMessageSize + "]");
         }
-        messageParserCallback.onMessage(buffer, startPos, endPos-startPos);
+        messageParserCallback.onMessage(buffer, startPos, endPos - startPos);
     }
 }
-

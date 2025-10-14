@@ -22,29 +22,23 @@ import java.util.Collection;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public class ByteBufferMatcher extends TypeSafeMatcher<ByteBuffer>
-{
+public class ByteBufferMatcher extends TypeSafeMatcher<ByteBuffer> {
 
     private final Collection<FixMessage> expected;
 
-    ByteBufferMatcher(final Collection<FixMessage> expected)
-    {
+    ByteBufferMatcher(final Collection<FixMessage> expected) {
         this.expected = expected;
     }
 
     @Override
-    protected boolean matchesSafely(final ByteBuffer byteBuffer)
-    {
+    protected boolean matchesSafely(final ByteBuffer byteBuffer) {
         int matchingAt = 0;
         final byte[] array = byteBuffer.array();
-        for (FixMessage message : expected)
-        {
+        for (FixMessage message : expected) {
             final byte[] bytes = message.toFixString().getBytes();
 
-            for (int j = 0; j < bytes.length; j++)
-            {
-                if (bytes[j] != array[j + matchingAt])
-                {
+            for (int j = 0; j < bytes.length; j++) {
+                if (bytes[j] != array[j + matchingAt]) {
                     return false;
                 }
             }
@@ -55,12 +49,10 @@ public class ByteBufferMatcher extends TypeSafeMatcher<ByteBuffer>
     }
 
     @Override
-    public void describeTo(final Description description)
-    {
+    public void describeTo(final Description description) {
         final StringBuilder humanlyExpected = new StringBuilder();
 
-        for (FixMessage message : expected)
-        {
+        for (FixMessage message : expected) {
             humanlyExpected.append(message.toFixString());
         }
 

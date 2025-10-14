@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.fields;
 
-public enum MsgType
-{
+public enum MsgType {
     BUSINESS_MESSAGE_REJECT("j"),
     EXECUTION_REPORT("8"),
     LOGIN("A"),
@@ -30,26 +29,21 @@ public enum MsgType
 
     private final String code;
 
-    MsgType(final String code)
-    {
+    MsgType(final String code) {
         this.code = code;
     }
 
-    public String getCode()
-    {
+    public String getCode() {
         return code;
     }
 
-    public static boolean knownMsgType(final String possibleMessageType)
-    {
-       for (MsgType msgType : MsgType.values())
-       {
-           if (msgType.getCode().equals(possibleMessageType))
-           {
-               return true;
-           }
-       }
-       return false;
+    public static boolean knownMsgType(final String possibleMessageType) {
+        for (MsgType msgType : MsgType.values()) {
+            if (msgType.getCode().equals(possibleMessageType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -18,28 +18,23 @@ package com.lmax.nanofix.concurrent;
 
 import java.util.concurrent.Semaphore;
 
-public class ThreadBlocker implements Blocker
-{
+public class ThreadBlocker implements Blocker {
     private final Semaphore semaphore = new Semaphore(0);
     private volatile boolean paused;
 
     @Override
-    public void mayWait()
-    {
-        while (paused)
-        {
+    public void mayWait() {
+        while (paused) {
             semaphore.acquireUninterruptibly();
         }
     }
 
-    public void pause()
-    {
+    public void pause() {
         paused = true;
 
     }
 
-    public void resume()
-    {
+    public void resume() {
         paused = false;
         semaphore.release();
     }

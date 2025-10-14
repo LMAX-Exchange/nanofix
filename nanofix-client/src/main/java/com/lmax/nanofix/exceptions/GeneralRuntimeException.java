@@ -16,10 +16,8 @@
 
 package com.lmax.nanofix.exceptions;
 
-public class GeneralRuntimeException extends RuntimeException
-{
-    public GeneralRuntimeException(final String message, final Throwable cause)
-    {
+public class GeneralRuntimeException extends RuntimeException {
+    public GeneralRuntimeException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

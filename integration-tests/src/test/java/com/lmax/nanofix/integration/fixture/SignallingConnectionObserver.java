@@ -21,22 +21,19 @@ import java.util.concurrent.locks.Lock;
 
 import com.lmax.nanofix.transport.ConnectionObserver;
 
-public class SignallingConnectionObserver implements ConnectionObserver
-{
+public class SignallingConnectionObserver implements ConnectionObserver {
     private final Lock lock;
     private final Condition connectionEstablishedCondition;
     private final Condition connectionClosedCondition;
 
-    public SignallingConnectionObserver(final Lock lock, final Condition connectionEstablishedCondition, final Condition connectionClosedCondition)
-    {
+    public SignallingConnectionObserver(final Lock lock, final Condition connectionEstablishedCondition, final Condition connectionClosedCondition) {
         this.lock = lock;
         this.connectionEstablishedCondition = connectionEstablishedCondition;
         this.connectionClosedCondition = connectionClosedCondition;
     }
 
     @Override
-    public void connectionEstablished()
-    {
+    public void connectionEstablished() {
         lock.lock();
         connectionEstablishedCondition.signalAll();
         lock.unlock();
@@ -44,8 +41,7 @@ public class SignallingConnectionObserver implements ConnectionObserver
     }
 
     @Override
-    public void connectionClosed()
-    {
+    public void connectionClosed() {
         lock.lock();
         connectionClosedCondition.signalAll();
         lock.unlock();

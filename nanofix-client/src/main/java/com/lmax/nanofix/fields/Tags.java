@@ -16,8 +16,7 @@
 
 package com.lmax.nanofix.fields;
 
-public enum Tags
-{
+public enum Tags {
     Account(1),
     BeginSeqNo(7),
     BusinessRejectReason(380),
@@ -52,25 +51,20 @@ public enum Tags
 
     private final int tag;
 
-    Tags(final int tag)
-    {
+    Tags(final int tag) {
         this.tag = tag;
     }
 
-    public int getTag()
-    {
+    public int getTag() {
         return tag;
     }
 
-    public static boolean knownTag(final int possibleTag)
-    {
-       for (Tags tag : Tags.values())
-       {
-           if (tag.getTag() == possibleTag)
-           {
-               return true;
-           }
-       }
-       return false;
+    public static boolean knownTag(final int possibleTag) {
+        for (Tags tag : Tags.values()) {
+            if (tag.getTag() == possibleTag) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -16,10 +16,8 @@
 
 package com.lmax.nanofix.transport;
 
-public class TransportClosedException extends RuntimeException
-{
-    public TransportClosedException(final String message, final Throwable cause)
-    {
+public class TransportClosedException extends RuntimeException {
+    public TransportClosedException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }
