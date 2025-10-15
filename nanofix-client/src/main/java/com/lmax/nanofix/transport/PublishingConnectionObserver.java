@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 public class PublishingConnectionObserver implements ConnectionObserver {
 
-    private final Set<ConnectionObserver> observers = new CopyOnWriteArraySet<ConnectionObserver>();
+    private final Set<ConnectionObserver> observers = new CopyOnWriteArraySet<>();
 
     public void addObserver(final ConnectionObserver connectionObserver) {
         observers.add(connectionObserver);

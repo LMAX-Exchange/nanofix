@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class FixMessagePublisher implements FixMessageHandler {
-    List<FixMessageHandler> handlers = new CopyOnWriteArrayList<FixMessageHandler>();
+    List<FixMessageHandler> handlers = new CopyOnWriteArrayList<>();
 
     public void subscribeToAllMessages(final FixMessageHandler fixMessageHandler) {
         handlers.add(fixMessageHandler);

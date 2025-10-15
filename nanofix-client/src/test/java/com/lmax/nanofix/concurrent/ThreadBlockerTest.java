@@ -30,14 +30,11 @@ public class ThreadBlockerTest {
     private volatile boolean running = true;
 
     @Test
-    public void threadShouldSwitchBetweenWaitingAndRunningStatesWhenRequested() throws InterruptedException {
+    public void threadShouldSwitchBetweenWaitingAndRunningStatesWhenRequested() {
         final ThreadBlocker threadBlocker = new ThreadBlocker();
-        final Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (running) {
-                    threadBlocker.mayWait();
-                }
+        final Thread thread = new Thread(() -> {
+            while (running) {
+                threadBlocker.mayWait();
             }
         });
         Assert.assertThat(thread.getState(), is(Thread.State.NEW));

@@ -23,12 +23,10 @@ import com.lmax.nanofix.outgoing.FixMessage;
 import com.lmax.nanofix.outgoing.OutboundMessageHandler;
 
 public class FixSession {
-    private int outboundSequenceNumber;
-    private OutboundMessageHandler outboundMessageSender;
+    private final OutboundMessageHandler outboundMessageSender;
 
     public FixSession(final OutboundMessageHandler outboundMessageSender) {
         this.outboundMessageSender = outboundMessageSender;
-        this.outboundSequenceNumber = 1;
     }
 
     public void send(final Collection<FixMessage> messages) {

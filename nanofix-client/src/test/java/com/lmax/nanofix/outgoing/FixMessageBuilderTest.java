@@ -45,7 +45,7 @@ public class FixMessageBuilderTest {
     }
 
     @Test
-    public void shouldBeAbleToBuildMessageWithArbitaryTagAndValue() {
+    public void shouldBeAbleToBuildMessageWithArbitraryTagAndValue() {
         final FixMessage fixMessage = new FixMessageBuilder("FIX.99").append(666666, "JunkData").build();
         final String expectedFixMessage = fixMessage.toFixString();
         assertThat(expectedFixMessage, is("8=FIX.99\u00019=16\u0001666666=JunkData\u000110=111\u0001"));

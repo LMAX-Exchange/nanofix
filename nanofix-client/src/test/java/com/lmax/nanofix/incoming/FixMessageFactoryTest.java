@@ -28,16 +28,13 @@ public class FixMessageFactoryTest {
     private static final byte THREE = 1;
 
     @Test
-    public void shouldConstructFixMessage() throws Exception {
+    public void shouldConstructFixMessage() {
         final byte[] msg1 = {ONE, TWO, THREE};
 
-        final FixMessageStreamFactory fixMessageStreamFactory = new FixMessageStreamFactory(new FixMessageHandler() {
-            @Override
-            public void onFixMessage(final FixMessage fixMessage) {
-                Assert.assertThat(fixMessage.getFirstValue(1), is(new String(msg1, 0, 1)));
-                Assert.assertThat(fixMessage.getFirstValue(2), is(new String(msg1, 1, 2)));
+        final FixMessageStreamFactory fixMessageStreamFactory = new FixMessageStreamFactory(fixMessage -> {
+            Assert.assertThat(fixMessage.getFirstValue(1), is(new String(msg1, 0, 1)));
+            Assert.assertThat(fixMessage.getFirstValue(2), is(new String(msg1, 1, 2)));
 
-            }
         });
 
         fixMessageStreamFactory.messageStart();

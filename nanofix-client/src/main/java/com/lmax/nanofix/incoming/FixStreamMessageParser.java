@@ -69,7 +69,7 @@ public final class FixStreamMessageParser implements ByteStreamMessageParser {
             }
         } catch (final Exception ex) {
             final String msg = String.format("Exception parsing segment:%n%s %n%s %n adding to %n%s %n%s",
-                                             segment.toString(),
+                                             segment,
                                              new String(segment.array(), 0, segmentLimit, FixUtil.getCharset()),
                                              fragmentedMessage.toString(),
                                              new String(fragmentedMessage.array(), 0, fragmentedMessage.position(), FixUtil.getCharset()));
@@ -118,8 +118,8 @@ public final class FixStreamMessageParser implements ByteStreamMessageParser {
 
         if (-1 != end) {
             callbackMessage(fragmentedMessage.array(), begin, end);
-            // our fragmented message didnt need all the bytes in the incoming segment,
-            // so rewind the segment by the exact number of bytes we didnt use
+            // our fragmented message didn't need all the bytes in the incoming segment,
+            // so rewind the segment by the exact number of bytes we didn't use
             segment.position(segment.position() - (fragmentedMessage.limit() - end));
             fragmentedMessage.clear();
         } else {

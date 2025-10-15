@@ -32,10 +32,6 @@ public class FixMessage {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("FixMessage");
-        sb.append("{messageWithChecksum='").append(messageWithChecksum).append('\'');
-        sb.append('}');
-        return sb.toString();
+        return "FixMessage{messageWithChecksum='" + messageWithChecksum + "'}";
     }
 }

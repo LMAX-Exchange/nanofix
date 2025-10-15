@@ -33,63 +33,63 @@ public class BitsTest {
     }
 
     @Test
-    public void shouldWriteAndReadLong() throws Exception {
+    public void shouldWriteAndReadLong() {
         long expectedValue = 12893471928734L;
         Bits.writeLong(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readLong(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadNegativeLong() throws Exception {
+    public void shouldWriteAndReadNegativeLong() {
         long expectedValue = -722393471928734L;
         Bits.writeLong(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readLong(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadInt() throws Exception {
+    public void shouldWriteAndReadInt() {
         int expectedValue = 51345234;
         Bits.writeInt(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readInt(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadNegativeInt() throws Exception {
+    public void shouldWriteAndReadNegativeInt() {
         int expectedValue = -34574234;
         Bits.writeInt(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readInt(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadShort() throws Exception {
+    public void shouldWriteAndReadShort() {
         short expectedValue = 3452;
         Bits.writeShort(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readShort(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadNegativeShort() throws Exception {
+    public void shouldWriteAndReadNegativeShort() {
         short expectedValue = -8123;
         Bits.writeShort(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readShort(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadByte() throws Exception {
+    public void shouldWriteAndReadByte() {
         byte expectedValue = 23;
         Bits.writeShort(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readShort(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadNegativeByte() throws Exception {
+    public void shouldWriteAndReadNegativeByte() {
         byte expectedValue = -13;
         Bits.writeByte(data, 3, expectedValue);
         assertEquals(expectedValue, Bits.readByte(data, 3));
     }
 
     @Test
-    public void shouldWriteAndReadBoolean() throws Exception {
+    public void shouldWriteAndReadBoolean() {
         Bits.writeBoolean(data, 3, true);
         assertTrue(Bits.readBoolean(data, 3));
         Bits.writeBoolean(data, 3, false);

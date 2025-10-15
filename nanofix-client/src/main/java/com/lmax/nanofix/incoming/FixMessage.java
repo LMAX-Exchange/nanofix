@@ -43,7 +43,7 @@ public class FixMessage {
     }
 
     public void replace(int tagId, String value) {
-        final LinkedList<String> values = new LinkedList<String>();
+        final LinkedList<String> values = new LinkedList<>();
         values.add(value);
         multimap.replaceValues(tagId, values);
     }

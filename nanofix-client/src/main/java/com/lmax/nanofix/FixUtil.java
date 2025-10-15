@@ -38,8 +38,8 @@ public final class FixUtil {
 
     public static byte[] newMessage(String... tags) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0, n = tags.length; i < n; i++) {
-            sb.append(tags[i]);
+        for (final String tag : tags) {
+            sb.append(tag);
             sb.append(FixTagParser.SOH);
         }
         return sb.toString().getBytes(FixUtil.getCharset());

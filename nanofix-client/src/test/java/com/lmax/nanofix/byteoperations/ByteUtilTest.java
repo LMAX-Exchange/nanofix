@@ -16,7 +16,6 @@
 
 package com.lmax.nanofix.byteoperations;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
@@ -107,7 +106,7 @@ public class ByteUtilTest {
     }
 
     @Test
-    public void shouldIdentifyDigitsInAsciiCharacters() throws UnsupportedEncodingException {
+    public void shouldIdentifyDigitsInAsciiCharacters() {
         assertTrue("Is a digit", ByteUtil.isAsciiDigit("0".getBytes(StandardCharsets.US_ASCII)[0]));
         assertTrue("Is a digit", ByteUtil.isAsciiDigit("1".getBytes(StandardCharsets.US_ASCII)[0]));
         assertTrue("Is a digit", ByteUtil.isAsciiDigit("2".getBytes(StandardCharsets.US_ASCII)[0]));
@@ -126,8 +125,7 @@ public class ByteUtilTest {
     }
 
     @Test
-    public void shouldReadIntegerFromAsciiBytes()
-            throws UnsupportedEncodingException {
+    public void shouldReadIntegerFromAsciiBytes() {
         checkIntegerEncodedAsAsciiValue("0");
         checkIntegerEncodedAsAsciiValue("00");
         checkIntegerEncodedAsAsciiValue("1");
@@ -139,8 +137,7 @@ public class ByteUtilTest {
     }
 
     @Test
-    public void shouldReadLongFromAsciiBytes()
-            throws UnsupportedEncodingException {
+    public void shouldReadLongFromAsciiBytes() {
         checkLongEncodedAsAsciiValue("0");
         checkLongEncodedAsAsciiValue("00");
         checkLongEncodedAsAsciiValue("1");
@@ -154,20 +151,19 @@ public class ByteUtilTest {
     }
 
     @Test
-    public void shouldConfirmIsIntegerValue() throws UnsupportedEncodingException {
+    public void shouldConfirmIsIntegerValue() {
         final byte[] bytes = "123".getBytes(StandardCharsets.US_ASCII);
         assertTrue(ByteUtil.isInteger(bytes, 0, bytes.length));
     }
 
     @Test
-    public void shouldConfirmIsNotIntegerValue() throws UnsupportedEncodingException {
+    public void shouldConfirmIsNotIntegerValue() {
         final byte[] bytes = "1;3".getBytes(StandardCharsets.US_ASCII);
         assertFalse(ByteUtil.isInteger(bytes, 0, bytes.length));
     }
 
     @Test
-    public void shouldReplaceSohWithBar()
-            throws Exception {
+    public void shouldReplaceSohWithBar() {
         final byte[] source = "A test string \u0001 containing \u0001 ASCII SOH\u0001".getBytes(StandardCharsets.US_ASCII);
         final byte[] expected = "A test string | containing | ASCII SOH|".getBytes(StandardCharsets.US_ASCII);
 
@@ -179,7 +175,7 @@ public class ByteUtilTest {
     }
 
     @Test
-    public void shouldEncodeStringAsAscii() throws UnsupportedEncodingException {
+    public void shouldEncodeStringAsAscii() {
         final String testSequence = "This is a string of characters that should encode into ascii bytes as simple as 123.";
 
         final byte[] result = new byte[testSequence.length()];
@@ -199,15 +195,13 @@ public class ByteUtilTest {
     }
 
 
-    private void checkIntegerEncodedAsAsciiValue(final String integerAsString)
-            throws UnsupportedEncodingException {
+    private void checkIntegerEncodedAsAsciiValue(final String integerAsString) {
         final byte[] bytes = integerAsString.getBytes(StandardCharsets.US_ASCII);
         final int value = ByteUtil.readIntFromAscii(bytes, 0, bytes.length);
         assertEquals(Integer.parseInt(integerAsString), value);
     }
 
-    private void checkLongEncodedAsAsciiValue(final String longAsString)
-            throws UnsupportedEncodingException {
+    private void checkLongEncodedAsAsciiValue(final String longAsString) {
         final byte[] bytes = longAsString.getBytes(StandardCharsets.US_ASCII);
         final long value = ByteUtil.readLongFromAscii(bytes, 0, bytes.length);
         assertEquals(Long.parseLong(longAsString), value);

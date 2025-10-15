@@ -36,8 +36,8 @@ public class TcpTransport implements Transport, ConnectionObserver {
     private volatile SocketChannel socketChannel;
     private volatile DelegatingServerSocketChannel serverSocketChannel;
 
-    private InetSocketAddress socketAddress;
-    private SocketFactory asyncTcpSocketFactory;
+    private final InetSocketAddress socketAddress;
+    private final SocketFactory asyncTcpSocketFactory;
 
     public TcpTransport(final PublishingConnectionObserver publishingTransportObserver, final InetSocketAddress socketAddress,
                         final SocketFactory asyncTcpSocketFactory, final TransportConfig transportConfig) {
@@ -50,14 +50,10 @@ public class TcpTransport implements Transport, ConnectionObserver {
 
     @Override
     public void connect() {
-        asyncTcpSocketFactory.createSocketOnOutgoingConnection(socketAddress, new SocketFactory.SocketEstablishedCallback() {
-            @Override
-            public void onSocketEstablished(final SocketChannel socketChannel) {
-                TcpTransport.this.socketChannel = socketChannel;
-                publishingTransportObserver.connectionEstablished();
-            }
+        asyncTcpSocketFactory.createSocketOnOutgoingConnection(socketAddress, socketChannel -> {
+            TcpTransport.this.socketChannel = socketChannel;
+            publishingTransportObserver.connectionEstablished();
         });
-
     }
 
     @Override
@@ -147,12 +143,9 @@ public class TcpTransport implements Transport, ConnectionObserver {
     }
 
     private void acceptNewConnection() {
-        asyncTcpSocketFactory.createSocketOnIncomingConnection(serverSocketChannel, new SocketFactory.SocketEstablishedCallback() {
-            @Override
-            public void onSocketEstablished(final SocketChannel socketChannel) {
-                TcpTransport.this.socketChannel = socketChannel;
-                publishingTransportObserver.connectionEstablished();
-            }
+        asyncTcpSocketFactory.createSocketOnIncomingConnection(serverSocketChannel, socketChannel -> {
+            TcpTransport.this.socketChannel = socketChannel;
+            publishingTransportObserver.connectionEstablished();
         });
     }
 }

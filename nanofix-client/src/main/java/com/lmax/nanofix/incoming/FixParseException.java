@@ -16,9 +16,8 @@
 
 package com.lmax.nanofix.incoming;
 
-@SuppressWarnings("serial")
-public final class FixParseException
-        extends RuntimeException {
+public final class FixParseException extends RuntimeException {
+
     public FixParseException(final String msg) {
         super(msg);
     }
