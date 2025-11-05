@@ -32,8 +32,10 @@ import static com.lmax.nanofix.fields.Tags.BusinessRejectReason;
 import static com.lmax.nanofix.fields.Tags.ClOrdID;
 import static com.lmax.nanofix.fields.Tags.EncryptMethod;
 import static com.lmax.nanofix.fields.Tags.EndSeqNo;
+import static com.lmax.nanofix.fields.Tags.GapFill;
 import static com.lmax.nanofix.fields.Tags.HeartBtInt;
 import static com.lmax.nanofix.fields.Tags.MsgSeqNum;
+import static com.lmax.nanofix.fields.Tags.NewSeqNo;
 import static com.lmax.nanofix.fields.Tags.OrdType;
 import static com.lmax.nanofix.fields.Tags.OrderQty;
 import static com.lmax.nanofix.fields.Tags.OrigSendingTime;
@@ -52,6 +54,7 @@ import static com.lmax.nanofix.fields.Tags.Side;
 import static com.lmax.nanofix.fields.Tags.Symbol;
 import static com.lmax.nanofix.fields.Tags.TargetCompID;
 import static com.lmax.nanofix.fields.Tags.TestReqID;
+import static com.lmax.nanofix.fields.Tags.TimeInForce;
 import static com.lmax.nanofix.fields.Tags.TransactTime;
 import static com.lmax.nanofix.fields.Tags.Username;
 
@@ -92,7 +95,7 @@ public class FixMessageBuilder {
      * @param messageLengthOverride The value of the (9) message length tag.
      * @return FixMessageBuilder
      */
-    public FixMessageBuilder overrideMessageLength(final String messageLengthOverride) {
+    public FixMessageBuilder overrideMessageLength(String messageLengthOverride) {
         this.messageLengthOverride = messageLengthOverride;
         return this;
     }
@@ -109,18 +112,15 @@ public class FixMessageBuilder {
     }
 
     public FixMessageBuilder messageType(final String type) {
-        if (MsgType.knownMsgType(type)) {
-            throw new RuntimeException("Please use the MsgType enumeration");
-        }
         return addTag(Tags.MsgType.getTag(), type);
-    }
-
-    public FixMessageBuilder account(final String account) {
-        return addTag(Tags.Account.getTag(), account);
     }
 
     public FixMessageBuilder messageType(final MsgType type) {
         return addTag(Tags.MsgType.getTag(), type.getCode());
+    }
+
+    public FixMessageBuilder account(final String account) {
+        return addTag(Tags.Account.getTag(), account);
     }
 
     public FixMessageBuilder senderCompID(final String senderCompID) {
@@ -244,6 +244,17 @@ public class FixMessageBuilder {
         return addTag(OrigSendingTime.getTag(), com.lmax.nanofix.FixUtil.DATE_TIME_FORMATTER.format(origSendingTime));
     }
 
+    public FixMessageBuilder timeInForce(final String tag) {
+        return addTag(TimeInForce.getTag(), tag);
+    }
+
+    public FixMessageBuilder newSeqNo(final int newSequenceNum) {
+        return addTag(NewSeqNo.getTag(), Integer.toString(newSequenceNum));
+    }
+
+    public FixMessageBuilder gapFill(final String value) {
+        return addTag(GapFill.getTag(), value);
+    }
 
     public FixMessageBuilder append(final int tag, final String value) {
         return addTag(tag, value);
