@@ -58,6 +58,7 @@ jreleaser {
     release {
         github {
             skipRelease = true
+            overwrite = false
         }
     }
     gitRootSearch = true
