@@ -15,6 +15,7 @@
  */
 plugins {
     id 'maven-publish'
+    id 'org.jreleaser' version '1.14.0'
 }
 
 dependencies {
@@ -23,21 +24,93 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.16'
 }
 
+jreleaser {
+    files {
+        active = 'ALWAYS'
+        glob {
+            pattern = 'build/staging-deploy/**/*.jar'
+            pattern = 'build/staging-deploy/**/*.pom'
+            pattern = 'build/staging-deploy/**/*.module'
+        }
+    }
+    signing {
+        active = 'ALWAYS'
+        armored = true
+        mode = 'MEMORY'
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                    applyMavenCentralRules = true
+                }
+            }
+        }
+    }
+    release {
+        github {
+            skipRelease = true
+        }
+    }
+    gitRootSearch = true
+}
+
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
+            groupId = 'com.lmax'
+            artifactId = 'nanofix'
+
             from components.java
+
+            pom {
+                name = 'nanofix'
+                description = 'A fix client for testing FIX servers.'
+                url = 'https://github.com/LMAX-Exchange/nanofix'
+                inceptionYear = '2015'
+                licenses {
+                    license {
+                        name = 'Apache-2.0'
+                        url = 'https://spdx.org/licenses/Apache-2.0.html'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'gaddiej'
+                        name = 'Judd Gaddie'
+                    }
+                    developer {
+                        id = 'barkerm'
+                        name = 'Michael Barker'
+                    }
+                    developer {
+                        id = 'shearerd'
+                        name = 'Daniel Shearer'
+                    }
+                    developer {
+                        id = 'singlaj'
+                        name = 'Jatinder Singla'
+                    }
+                    developer {
+                        id = 'stoym'
+                        name = 'Markus Stoy'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/LMAX-Exchange/nanofix.git'
+                    developerConnection = 'scm:git:ssh://github.com/LMAX-Exchange/nanofix.git'
+                    url = 'https://github.com/LMAX-Exchange/nanofix'
+                }
+            }
         }
     }
 
     repositories {
         maven {
-            name = 'GitHubPackages'
-            url = 'https://maven.pkg.github.com/' + System.getenv('GITHUB_REPOSITORY')
-            credentials {
-                username = System.getenv('GITHUB_ACTOR')
-                password = System.getenv('GITHUB_TOKEN')
-            }
+            url = layout.buildDirectory.dir('staging-deploy')
         }
     }
 }
