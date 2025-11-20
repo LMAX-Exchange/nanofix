@@ -34,6 +34,7 @@ jobs:
           JRELEASER_GPG_PASSPHRASE: "${{ secrets.JRELEASER_GPG_PASSPHRASE }}"
           JRELEASER_GITHUB_TOKEN: ${{ github.token }}
           JRELEASER_MAVENCENTRAL_STAGE: "FULL"
+          NANOFIX_VERSION: "refs/tags/${{ github.event.release.tag_name }}"
       - name: Add Artifact to GitHub Release
         uses: softprops/action-gh-release@v1
         with:
