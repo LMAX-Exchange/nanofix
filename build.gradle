@@ -62,14 +62,6 @@ subprojects {
                 'Bundle-Description': fullDescription,
                 'Bundle-DocURL': siteUrl)
     }
-
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allSource
-    }
-
-    artifacts {
-        archives sourcesJar
-    }
 }
 
 class Version

@@ -24,6 +24,11 @@ dependencies {
     implementation 'org.slf4j:slf4j-api:1.7.16'
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 jreleaser {
     files {
         active = 'ALWAYS'

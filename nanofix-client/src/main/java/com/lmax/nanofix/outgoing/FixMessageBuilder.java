@@ -62,7 +62,7 @@ import static com.lmax.nanofix.fields.Tags.Username;
  * FixMessageBuilder used for constructing messages to be sent.
  * Tags 8 BeginString, 9 MessageLength and 10 CheckSum are automatically appended in the correct order.
  * The message length and checksum can be overridden with the {@link #overrideMessageLength(String)}. and {@link #overrideChecksum(String)} methods.
- * All other fix tags & values are appended to the fix message in the order that they are specified.
+ * All other fix tags and values are appended to the fix message in the order that they are specified.
  * Care must be taken to ensure the order of fields is valid for the version of the FIX protocol being used.
  */
 public class FixMessageBuilder {
